@@ -151,10 +151,26 @@ body {
 }
 
 /* ============================================
-   TRANSICIONES DE CONTENIDO
+   TRANSICIONES DE CONTENIDO MEJORADAS
    ============================================ */
 .content-section {
-    animation: fadeIn 0.5s ease-out;
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+.content-section.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.content-section.fade-out {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 1, 1), 
+                transform 0.3s cubic-bezier(0.4, 0, 1, 1);
 }
 
 @keyframes fadeIn {

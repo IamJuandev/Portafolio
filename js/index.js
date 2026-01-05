@@ -217,7 +217,7 @@ const NavigationSystem = {
             this.activeSection.classList.add('fade-out');
         }
 
-        // Paso 2: Después de 300ms, ocultar la sección anterior y mostrar la nueva
+        // Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
         setTimeout(() => {
             // Ocultar sección anterior
             if (this.activeSection) {
@@ -236,18 +236,21 @@ const NavigationSystem = {
             
             this.activeSection = newSection;
 
-            // Scroll suave hacia la nueva sección
-            newSection.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
+            // Scroll suave hacia la nueva sección (solo si está fuera de vista)
+            const rect = newSection.getBoundingClientRect();
+            if (rect.top < 0 || rect.bottom > window.innerHeight) {
+                newSection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
 
             // Permitir nuevas transiciones después de completar
             setTimeout(() => {
                 this.isTransitioning = false;
-            }, 500);
+            }, 400);
 
-        }, 300); // Tiempo del fade-out
+        }, 250); // Tiempo del fade-out optimizado
     }
 };
 
