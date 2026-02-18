@@ -76,20 +76,31 @@
         container: null,
         icons: null,
         iconCount: 0,
+        angleStep: 0,
         angle: 0,
         radiusX: 0,
         radiusY: 0,
         animationId: null,
+        isPaused: false,
+        _boundAnimate: null,
 
         init() {
             this.container = document.getElementById('orbit-container');
-            this.icons = document.querySelectorAll('.tech-icon');
+            const nodeList = document.querySelectorAll('.tech-icon');
             
-            if (!this.container || this.icons.length === 0) return;
+            if (!this.container || nodeList.length === 0) return;
 
+            // Convertir NodeList a Array para iteración más rápida
+            this.icons = Array.from(nodeList);
             this.iconCount = this.icons.length;
+            this.angleStep = (2 * Math.PI) / this.iconCount;
+
+            // Pre-bind para evitar crear funciones nuevas en cada frame
+            this._boundAnimate = this.animate.bind(this);
+
             this.calculateDimensions();
             this.setupResizeHandler();
+            this.setupHoverPause();
             this.startAnimation();
         },
 
@@ -111,21 +122,31 @@
             window.addEventListener('resize', debouncedResize, { passive: true });
         },
 
-        animate() {
-            this.angle += CONFIG.orbit.speed;
-            const angleStep = (2 * Math.PI) / this.iconCount;
-
-            this.icons.forEach((icon, index) => {
-                const iconAngle = this.angle + (index * angleStep);
-                const x = this.radiusX * Math.cos(iconAngle);
-                const y = this.radiusY * Math.sin(iconAngle);
-                const bobbing = Math.sin(this.angle * CONFIG.orbit.bobbingSpeed + index) * CONFIG.orbit.bobbingIntensity;
-
-                // translate3d activa aceleración por hardware (GPU)
-                icon.style.transform = `translate3d(${x}px, ${y + bobbing}px, 0)`;
+        setupHoverPause() {
+            this.icons.forEach(icon => {
+                icon.addEventListener('mouseenter', () => { this.isPaused = true; });
+                icon.addEventListener('mouseleave', () => { this.isPaused = false; });
             });
+        },
 
-            this.animationId = requestAnimationFrame(() => this.animate());
+        animate() {
+            if (!this.isPaused) {
+                this.angle += CONFIG.orbit.speed;
+            }
+
+            const { angle, angleStep, radiusX, radiusY, icons } = this;
+            const { bobbingSpeed, bobbingIntensity } = CONFIG.orbit;
+
+            for (let i = 0; i < icons.length; i++) {
+                const iconAngle = angle + (i * angleStep);
+                const x = radiusX * Math.cos(iconAngle);
+                const y = radiusY * Math.sin(iconAngle);
+                const bobbing = Math.sin(angle * bobbingSpeed + i) * bobbingIntensity;
+
+                icons[i].style.transform = `translate3d(${x}px, ${y + bobbing}px, 0)`;
+            }
+
+            this.animationId = requestAnimationFrame(this._boundAnimate);
         },
 
         startAnimation() {
@@ -136,123 +157,123 @@
         }
     };
 
-   // ============================================
-// MÓDULO DE NAVEGACIÓN CON TRANSICIONES SUAVES
-// ============================================
-const NavigationSystem = {
-    navContainer: null,
-    contentSections: null,
-    activeSection: null,
-    activeButton: null,
-    isTransitioning: false,
+    // ============================================
+    // MÓDULO DE NAVEGACIÓN CON TRANSICIONES SUAVES
+    // ============================================
+    const NavigationSystem = {
+        navContainer: null,
+        contentSections: null,
+        activeSection: null,
+        activeButton: null,
+        isTransitioning: false,
 
-    init() {
-        const navButtons = document.querySelectorAll('.nav-btn');
-        if (navButtons.length === 0) return;
+        init() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            if (navButtons.length === 0) return;
 
-        this.navContainer = navButtons[0].closest('nav') || navButtons[0].parentElement;
-        this.contentSections = document.querySelectorAll('.content-section');
-        
-        // Encontrar la sección activa inicial
-        this.activeSection = document.querySelector('.content-section:not(.hidden)');
-        this.activeButton = document.querySelector('.nav-btn.active');
+            this.navContainer = navButtons[0].closest('nav') || navButtons[0].parentElement;
+            this.contentSections = document.querySelectorAll('.content-section');
 
-        // Inicializar la primera sección como activa
-        if (this.activeSection) {
-            this.activeSection.classList.add('active');
-            this.activeSection.classList.remove('hidden');
-        }
+            // Encontrar la sección activa inicial
+            this.activeSection = document.querySelector('.content-section:not(.hidden)');
+            this.activeButton = document.querySelector('.nav-btn.active');
 
-        this.setupEventDelegation();
-        this.initializeButtonStates(navButtons);
-    },
-
-    setupEventDelegation() {
-        this.navContainer.addEventListener('click', (e) => {
-            const button = e.target.closest('.nav-btn');
-            
-            if (!button || button === this.activeButton || this.isTransitioning) return;
-
-            this.handleNavigation(button);
-        });
-    },
-
-    initializeButtonStates(buttons) {
-        buttons.forEach(btn => {
-            if (!btn.classList.contains('active')) {
-                btn.classList.add('nav-btn-inactive');
-            }
-        });
-    },
-
-    handleNavigation(clickedButton) {
-        // Prevenir múltiples clics durante la transición
-        this.isTransitioning = true;
-
-        // Actualizar botones
-        if (this.activeButton) {
-            this.activeButton.classList.remove('active');
-            this.activeButton.classList.add('nav-btn-inactive');
-        }
-
-        clickedButton.classList.remove('nav-btn-inactive');
-        clickedButton.classList.add('active');
-        this.activeButton = clickedButton;
-
-        // Cambiar contenido con animación
-        const targetId = clickedButton.dataset.target;
-        this.switchContentWithAnimation(targetId);
-    },
-
-    switchContentWithAnimation(targetId) {
-        const newSection = document.getElementById(targetId);
-        
-        if (!newSection || newSection === this.activeSection) {
-            this.isTransitioning = false;
-            return;
-        }
-
-        // Paso 1: Hacer fade-out de la sección actual
-        if (this.activeSection) {
-            this.activeSection.classList.add('fade-out');
-        }
-
-        // Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
-        setTimeout(() => {
-            // Ocultar sección anterior
+            // Inicializar la primera sección como activa
             if (this.activeSection) {
-                this.activeSection.classList.remove('active', 'fade-out');
-                this.activeSection.classList.add('hidden');
+                this.activeSection.classList.add('active');
+                this.activeSection.classList.remove('hidden');
             }
 
-            // Mostrar nueva sección
-            newSection.classList.remove('hidden');
-            
-            // Trigger de reflow para que la animación funcione
-            newSection.offsetHeight;
-            
-            // Activar animación de entrada
-            newSection.classList.add('active');
-            
-            this.activeSection = newSection;
+            this.setupEventDelegation();
+            this.initializeButtonStates(navButtons);
+        },
 
-            // Scroll suave hacia la nueva sección (solo si está fuera de vista)
-            const rect = newSection.getBoundingClientRect();
-            if (rect.top < 0 || rect.bottom > window.innerHeight) {
-                newSection.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
+        setupEventDelegation() {
+            this.navContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.nav-btn');
+
+                if (!button || button === this.activeButton || this.isTransitioning) return;
+
+                this.handleNavigation(button);
+            });
+        },
+
+        initializeButtonStates(buttons) {
+            buttons.forEach(btn => {
+                if (!btn.classList.contains('active')) {
+                    btn.classList.add('nav-btn-inactive');
+                }
+            });
+        },
+
+        handleNavigation(clickedButton) {
+            // Prevenir múltiples clics durante la transición
+            this.isTransitioning = true;
+
+            // Actualizar botones
+            if (this.activeButton) {
+                this.activeButton.classList.remove('active');
+                this.activeButton.classList.add('nav-btn-inactive');
             }
 
-            // Permitir nuevas transiciones después de completar
-            setTimeout(() => {
+            clickedButton.classList.remove('nav-btn-inactive');
+            clickedButton.classList.add('active');
+            this.activeButton = clickedButton;
+
+            // Cambiar contenido con animación
+            const targetId = clickedButton.dataset.target;
+            this.switchContentWithAnimation(targetId);
+        },
+
+        switchContentWithAnimation(targetId) {
+            const newSection = document.getElementById(targetId);
+
+            if (!newSection || newSection === this.activeSection) {
                 this.isTransitioning = false;
-            }, 400);
+                return;
+            }
 
-        }, 250); // Tiempo del fade-out optimizado
-    }
-};
+            // Paso 1: Hacer fade-out de la sección actual
+            if (this.activeSection) {
+                this.activeSection.classList.add('fade-out');
+            }
+
+            // Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
+            setTimeout(() => {
+                // Ocultar sección anterior
+                if (this.activeSection) {
+                    this.activeSection.classList.remove('active', 'fade-out');
+                    this.activeSection.classList.add('hidden');
+                }
+
+                // Mostrar nueva sección
+                newSection.classList.remove('hidden');
+
+                // Trigger de reflow para que la animación funcione
+                void newSection.offsetHeight;
+
+                // Activar animación de entrada
+                newSection.classList.add('active');
+
+                this.activeSection = newSection;
+
+                // Scroll suave hacia la nueva sección (solo si está fuera de vista)
+                const rect = newSection.getBoundingClientRect();
+                if (rect.top < 0 || rect.bottom > window.innerHeight) {
+                    newSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+
+                // Permitir nuevas transiciones después de completar
+                setTimeout(() => {
+                    this.isTransitioning = false;
+                }, 400);
+
+            }, 250);
+        }
+    };
 
     // ============================================
     // INICIALIZACIÓN PRINCIPAL
@@ -261,6 +282,14 @@ const NavigationSystem = {
         ParticleSystem.init();
         OrbitSystem.init();
         NavigationSystem.init();
+
+        // Auto-scroll al contenido al cargar la página
+        setTimeout(() => {
+            const contentContainer = document.getElementById('content-container');
+            if (contentContainer) {
+                contentContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 500);
     }
 
     // Esperar a que el DOM esté listo
