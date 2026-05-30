@@ -3,61 +3,64 @@
  * Optimizado para máximo rendimiento en dispositivos móviles y desktop
  */
 
-(function() {
-    'use strict';
-    
-    // ============================================
-    // CONFIGURACIÓN CENTRALIZADA
-    // ============================================
-    const CONFIG = {
-        particles: {
-            count: 35, // Reducido de 50 a 35 para mejor rendimiento
-            minSize: 1,
-            maxSize: 4,
-            minDuration: 8,
-            maxDuration: 13,
-            maxDelay: 5
-        },
-        orbit: {
-            speed: 0.005,
-            bobbingIntensity: 10,
-            bobbingSpeed: 2,
-            iconPadding: 30
-        },
-        resize: {
-            debounceDelay: 150
-        }
-    };
+(() => {
+	// ============================================
+	// CONFIGURACIÓN CENTRALIZADA
+	// ============================================
+	const CONFIG = {
+		particles: {
+			count: 35, // Reducido de 50 a 35 para mejor rendimiento
+			minSize: 1,
+			maxSize: 4,
+			minDuration: 8,
+			maxDuration: 13,
+			maxDelay: 5,
+		},
+		orbit: {
+			speed: 0.005,
+			bobbingIntensity: 10,
+			bobbingSpeed: 2,
+			iconPadding: 30,
+		},
+		resize: {
+			debounceDelay: 150,
+		},
+	};
 
-    // ============================================
-    // MÓDULO DE PARTÍCULAS
-    // ============================================
-    const ParticleSystem = {
-        init() {
-            const container = document.getElementById('particle-container');
-            if (!container) return;
+	// ============================================
+	// MÓDULO DE PARTÍCULAS
+	// ============================================
+	const ParticleSystem = {
+		init() {
+			const container = document.getElementById("particle-container");
+			if (!container) return;
 
-            const fragment = document.createDocumentFragment();
+			const fragment = document.createDocumentFragment();
 
-            for (let i = 0; i < CONFIG.particles.count; i++) {
-                const particle = this.createParticle();
-                fragment.appendChild(particle);
-            }
+			for (let i = 0; i < CONFIG.particles.count; i++) {
+				const particle = this.createParticle();
+				fragment.appendChild(particle);
+			}
 
-            // Una sola manipulación del DOM
-            container.appendChild(fragment);
-        },
+			// Una sola manipulación del DOM
+			container.appendChild(fragment);
+		},
 
-        createParticle() {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            
-            const size = Math.random() * (CONFIG.particles.maxSize - CONFIG.particles.minSize) + CONFIG.particles.minSize;
-            const duration = Math.random() * (CONFIG.particles.maxDuration - CONFIG.particles.minDuration) + CONFIG.particles.minDuration;
-            const delay = Math.random() * CONFIG.particles.maxDelay;
-            const left = Math.random() * 100;
+		createParticle() {
+			const particle = document.createElement("div");
+			particle.className = "particle";
 
-            particle.style.cssText = `
+			const size =
+				Math.random() * (CONFIG.particles.maxSize - CONFIG.particles.minSize) +
+				CONFIG.particles.minSize;
+			const duration =
+				Math.random() *
+					(CONFIG.particles.maxDuration - CONFIG.particles.minDuration) +
+				CONFIG.particles.minDuration;
+			const delay = Math.random() * CONFIG.particles.maxDelay;
+			const left = Math.random() * 100;
+
+			particle.style.cssText = `
                 width: ${size}px;
                 height: ${size}px;
                 left: ${left}%;
@@ -65,238 +68,328 @@
                 animation-delay: ${delay}s;
             `;
 
-            return particle;
-        }
-    };
+			return particle;
+		},
+	};
 
-    // ============================================
-    // MÓDULO DE ÓRBITA
-    // ============================================
-    const OrbitSystem = {
-        container: null,
-        icons: null,
-        iconCount: 0,
-        angleStep: 0,
-        angle: 0,
-        radiusX: 0,
-        radiusY: 0,
-        animationId: null,
-        isPaused: false,
-        _boundAnimate: null,
+	// ============================================
+	// MÓDULO DE ÓRBITA
+	// ============================================
+	const OrbitSystem = {
+		container: null,
+		icons: null,
+		iconCount: 0,
+		angleStep: 0,
+		angle: 0,
+		radiusX: 0,
+		radiusY: 0,
+		animationId: null,
+		isPaused: false,
+		_boundAnimate: null,
 
-        init() {
-            this.container = document.getElementById('orbit-container');
-            const nodeList = document.querySelectorAll('.tech-icon');
-            
-            if (!this.container || nodeList.length === 0) return;
+		init() {
+			this.container = document.getElementById("orbit-container");
+			const nodeList = document.querySelectorAll(".tech-icon");
 
-            // Convertir NodeList a Array para iteración más rápida
-            this.icons = Array.from(nodeList);
-            this.iconCount = this.icons.length;
-            this.angleStep = (2 * Math.PI) / this.iconCount;
+			if (!this.container || nodeList.length === 0) return;
 
-            // Pre-bind para evitar crear funciones nuevas en cada frame
-            this._boundAnimate = this.animate.bind(this);
+			// Convertir NodeList a Array para iteración más rápida
+			this.icons = Array.from(nodeList);
+			this.iconCount = this.icons.length;
+			this.angleStep = (2 * Math.PI) / this.iconCount;
 
-            this.calculateDimensions();
-            this.setupResizeHandler();
-            this.setupHoverPause();
-            this.startAnimation();
-        },
+			// Pre-bind para evitar crear funciones nuevas en cada frame
+			this._boundAnimate = this.animate.bind(this);
 
-        calculateDimensions() {
-            const rect = this.container.getBoundingClientRect();
-            this.radiusX = rect.width / 2 - CONFIG.orbit.iconPadding;
-            this.radiusY = rect.height / 2 - CONFIG.orbit.iconPadding;
-        },
+			this.calculateDimensions();
+			this.setupResizeHandler();
+			this.setupHoverPause();
+			this.startAnimation();
+		},
 
-        setupResizeHandler() {
-            let resizeTimeout;
-            const debouncedResize = () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    this.calculateDimensions();
-                }, CONFIG.resize.debounceDelay);
-            };
+		calculateDimensions() {
+			const rect = this.container.getBoundingClientRect();
+			this.radiusX = rect.width / 2 - CONFIG.orbit.iconPadding;
+			this.radiusY = rect.height / 2 - CONFIG.orbit.iconPadding;
+		},
 
-            window.addEventListener('resize', debouncedResize, { passive: true });
-        },
+		setupResizeHandler() {
+			let resizeTimeout;
+			const debouncedResize = () => {
+				clearTimeout(resizeTimeout);
+				resizeTimeout = setTimeout(() => {
+					this.calculateDimensions();
+				}, CONFIG.resize.debounceDelay);
+			};
 
-        setupHoverPause() {
-            this.icons.forEach(icon => {
-                icon.addEventListener('mouseenter', () => { this.isPaused = true; });
-                icon.addEventListener('mouseleave', () => { this.isPaused = false; });
-            });
-        },
+			window.addEventListener("resize", debouncedResize, { passive: true });
+		},
 
-        animate() {
-            if (!this.isPaused) {
-                this.angle += CONFIG.orbit.speed;
-            }
+		setupHoverPause() {
+			this.icons.forEach((icon) => {
+				icon.addEventListener("mouseenter", () => {
+					this.isPaused = true;
+				});
+				icon.addEventListener("mouseleave", () => {
+					this.isPaused = false;
+				});
+			});
+		},
 
-            const { angle, angleStep, radiusX, radiusY, icons } = this;
-            const { bobbingSpeed, bobbingIntensity } = CONFIG.orbit;
+		animate() {
+			if (!this.isPaused) {
+				this.angle += CONFIG.orbit.speed;
+			}
 
-            for (let i = 0; i < icons.length; i++) {
-                const iconAngle = angle + (i * angleStep);
-                const x = radiusX * Math.cos(iconAngle);
-                const y = radiusY * Math.sin(iconAngle);
-                const bobbing = Math.sin(angle * bobbingSpeed + i) * bobbingIntensity;
+			const { angle, angleStep, radiusX, radiusY, icons } = this;
+			const { bobbingSpeed, bobbingIntensity } = CONFIG.orbit;
 
-                icons[i].style.transform = `translate3d(${x}px, ${y + bobbing}px, 0)`;
-            }
+			for (let i = 0; i < icons.length; i++) {
+				const iconAngle = angle + i * angleStep;
+				const x = radiusX * Math.cos(iconAngle);
+				const y = radiusY * Math.sin(iconAngle);
+				const bobbing = Math.sin(angle * bobbingSpeed + i) * bobbingIntensity;
 
-            this.animationId = requestAnimationFrame(this._boundAnimate);
-        },
+				icons[i].style.transform = `translate3d(${x}px, ${y + bobbing}px, 0)`;
+			}
 
-        startAnimation() {
-            if (this.animationId) {
-                cancelAnimationFrame(this.animationId);
-            }
-            this.animate();
-        }
-    };
+			this.animationId = requestAnimationFrame(this._boundAnimate);
+		},
 
-    // ============================================
-    // MÓDULO DE NAVEGACIÓN CON TRANSICIONES SUAVES
-    // ============================================
-    const NavigationSystem = {
-        navContainer: null,
-        contentSections: null,
-        activeSection: null,
-        activeButton: null,
-        isTransitioning: false,
+		startAnimation() {
+			if (this.animationId) {
+				cancelAnimationFrame(this.animationId);
+			}
+			this.animate();
+		},
+	};
 
-        init() {
-            const navButtons = document.querySelectorAll('.nav-btn');
-            if (navButtons.length === 0) return;
+	// ============================================
+	// MÓDULO DE NAVEGACIÓN CON TRANSICIONES SUAVES
+	// ============================================
+	const NavigationSystem = {
+		navContainer: null,
+		contentSections: null,
+		activeSection: null,
+		activeButton: null,
+		isTransitioning: false,
 
-            this.navContainer = navButtons[0].closest('nav') || navButtons[0].parentElement;
-            this.contentSections = document.querySelectorAll('.content-section');
+		init() {
+			const navButtons = document.querySelectorAll(".nav-btn");
+			if (navButtons.length === 0) return;
 
-            // Encontrar la sección activa inicial
-            this.activeSection = document.querySelector('.content-section:not(.hidden)');
-            this.activeButton = document.querySelector('.nav-btn.active');
+			this.navContainer =
+				navButtons[0].closest("nav") || navButtons[0].parentElement;
+			this.contentSections = document.querySelectorAll(".content-section");
 
-            // Inicializar la primera sección como activa
-            if (this.activeSection) {
-                this.activeSection.classList.add('active');
-                this.activeSection.classList.remove('hidden');
-            }
+			// Encontrar la sección activa inicial
+			this.activeSection = document.querySelector(
+				".content-section:not(.hidden)",
+			);
+			this.activeButton = document.querySelector(".nav-btn.active");
 
-            this.setupEventDelegation();
-            this.initializeButtonStates(navButtons);
-        },
+			// Inicializar la primera sección como activa
+			if (this.activeSection) {
+				this.activeSection.classList.add("active");
+				this.activeSection.classList.remove("hidden");
+			}
 
-        setupEventDelegation() {
-            this.navContainer.addEventListener('click', (e) => {
-                const button = e.target.closest('.nav-btn');
+			this.setupEventDelegation();
+			this.initializeButtonStates(navButtons);
+		},
 
-                if (!button || button === this.activeButton || this.isTransitioning) return;
+		setupEventDelegation() {
+			this.navContainer.addEventListener("click", (e) => {
+				const button = e.target.closest(".nav-btn");
 
-                this.handleNavigation(button);
-            });
-        },
+				if (!button || button === this.activeButton || this.isTransitioning)
+					return;
 
-        initializeButtonStates(buttons) {
-            buttons.forEach(btn => {
-                if (!btn.classList.contains('active')) {
-                    btn.classList.add('nav-btn-inactive');
-                }
-            });
-        },
+				this.handleNavigation(button);
+			});
+		},
 
-        handleNavigation(clickedButton) {
-            // Prevenir múltiples clics durante la transición
-            this.isTransitioning = true;
+		initializeButtonStates(buttons) {
+			buttons.forEach((btn) => {
+				if (!btn.classList.contains("active")) {
+					btn.classList.add("nav-btn-inactive");
+				}
+			});
+		},
 
-            // Actualizar botones
-            if (this.activeButton) {
-                this.activeButton.classList.remove('active');
-                this.activeButton.classList.add('nav-btn-inactive');
-            }
+		handleNavigation(clickedButton) {
+			// Prevenir múltiples clics durante la transición
+			this.isTransitioning = true;
 
-            clickedButton.classList.remove('nav-btn-inactive');
-            clickedButton.classList.add('active');
-            this.activeButton = clickedButton;
+			// Actualizar botones
+			if (this.activeButton) {
+				this.activeButton.classList.remove("active");
+				this.activeButton.classList.add("nav-btn-inactive");
+			}
 
-            // Cambiar contenido con animación
-            const targetId = clickedButton.dataset.target;
-            this.switchContentWithAnimation(targetId);
-        },
+			clickedButton.classList.remove("nav-btn-inactive");
+			clickedButton.classList.add("active");
+			this.activeButton = clickedButton;
 
-        switchContentWithAnimation(targetId) {
-            const newSection = document.getElementById(targetId);
+			// Cambiar contenido con animación
+			const targetId = clickedButton.dataset.target;
+			this.switchContentWithAnimation(targetId);
+		},
 
-            if (!newSection || newSection === this.activeSection) {
-                this.isTransitioning = false;
-                return;
-            }
+		switchContentWithAnimation(targetId) {
+			const newSection = document.getElementById(targetId);
 
-            // Paso 1: Hacer fade-out de la sección actual
-            if (this.activeSection) {
-                this.activeSection.classList.add('fade-out');
-            }
+			if (!newSection || newSection === this.activeSection) {
+				this.isTransitioning = false;
+				return;
+			}
 
-            // Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
-            setTimeout(() => {
-                // Ocultar sección anterior
-                if (this.activeSection) {
-                    this.activeSection.classList.remove('active', 'fade-out');
-                    this.activeSection.classList.add('hidden');
-                }
+			// Paso 1: Hacer fade-out de la sección actual
+			if (this.activeSection) {
+				this.activeSection.classList.add("fade-out");
+			}
 
-                // Mostrar nueva sección
-                newSection.classList.remove('hidden');
+			// Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
+			setTimeout(() => {
+				// Ocultar sección anterior
+				if (this.activeSection) {
+					this.activeSection.classList.remove("active", "fade-out");
+					this.activeSection.classList.add("hidden");
+				}
 
-                // Trigger de reflow para que la animación funcione
-                void newSection.offsetHeight;
+				// Mostrar nueva sección
+				newSection.classList.remove("hidden");
 
-                // Activar animación de entrada
-                newSection.classList.add('active');
+				// Trigger de reflow para que la animación funcione
+				void newSection.offsetHeight;
 
-                this.activeSection = newSection;
+				// Activar animación de entrada
+				newSection.classList.add("active");
 
-                // Scroll suave hacia la nueva sección (solo si está fuera de vista)
-                const rect = newSection.getBoundingClientRect();
-                if (rect.top < 0 || rect.bottom > window.innerHeight) {
-                    newSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
+				this.activeSection = newSection;
 
-                // Permitir nuevas transiciones después de completar
-                setTimeout(() => {
-                    this.isTransitioning = false;
-                }, 400);
+				// Scroll suave hacia la nueva sección (solo si está fuera de vista)
+				const rect = newSection.getBoundingClientRect();
+				if (rect.top < 0 || rect.bottom > window.innerHeight) {
+					newSection.scrollIntoView({
+						behavior: "smooth",
+						block: "start",
+					});
+				}
 
-            }, 250);
-        }
-    };
+				// Permitir nuevas transiciones después de completar
+				setTimeout(() => {
+					this.isTransitioning = false;
+				}, 400);
+			}, 250);
+		},
+	};
 
-    // ============================================
-    // INICIALIZACIÓN PRINCIPAL
-    // ============================================
-    function initializePortfolio() {
-        ParticleSystem.init();
-        OrbitSystem.init();
-        NavigationSystem.init();
+	// ============================================
+	// MÓDULO DE CHAT IA DEL PORTAFOLIO
+	// ============================================
+	const ChatAssistant = {
+		webhookUrl: "https://n8n.arkanis.site/webhook/portfolio-chat",
+		isSending: false,
 
-        // Auto-scroll al contenido al cargar la página
-        setTimeout(() => {
-            const contentContainer = document.getElementById('content-container');
-            if (contentContainer) {
-                contentContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }, 500);
-    }
+		init() {
+			this.toggle = document.getElementById("ai-chat-toggle");
+			this.panel = document.getElementById("ai-chat-panel");
+			this.form = document.getElementById("ai-chat-form");
+			this.input = document.getElementById("ai-chat-input");
+			this.messages = document.getElementById("ai-chat-messages");
 
-    // Esperar a que el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializePortfolio);
-    } else {
-        initializePortfolio();
-    }
+			if (
+				!this.toggle ||
+				!this.panel ||
+				!this.form ||
+				!this.input ||
+				!this.messages
+			)
+				return;
 
+			this.toggle.addEventListener("click", () => {
+				this.panel.classList.toggle("hidden");
+				if (!this.panel.classList.contains("hidden")) {
+					this.input.focus();
+				}
+			});
+
+			this.form.addEventListener("submit", (event) => this.handleSubmit(event));
+		},
+
+		async handleSubmit(event) {
+			event.preventDefault();
+			if (this.isSending) return;
+
+			const message = this.input.value.trim();
+			if (!message) return;
+
+			this.input.value = "";
+			this.addMessage(message, "user");
+			const loadingMessage = this.addMessage("Pensando...", "assistant");
+			this.isSending = true;
+
+			try {
+				const response = await fetch(this.webhookUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+					},
+					body: new URLSearchParams({ message }),
+				});
+
+				const data = await response.json().catch(() => ({}));
+				loadingMessage.textContent =
+					data.answer || "No pude responder en este momento. Intentá de nuevo.";
+			} catch (error) {
+				loadingMessage.textContent =
+					"No pude conectar con el asistente. Revisá que el workflow de n8n esté activo.";
+			} finally {
+				this.isSending = false;
+				this.scrollToBottom();
+			}
+		},
+
+		addMessage(text, sender) {
+			const bubble = document.createElement("div");
+			bubble.className =
+				sender === "user"
+					? "p-3 rounded-xl bg-teal-500 text-gray-900 ml-8"
+					: "p-3 rounded-xl bg-white/10 text-gray-200 mr-8";
+			bubble.textContent = text;
+			this.messages.appendChild(bubble);
+			this.scrollToBottom();
+			return bubble;
+		},
+
+		scrollToBottom() {
+			this.messages.scrollTop = this.messages.scrollHeight;
+		},
+	};
+
+	// ============================================
+	// INICIALIZACIÓN PRINCIPAL
+	// ============================================
+	function initializePortfolio() {
+		ParticleSystem.init();
+		OrbitSystem.init();
+		NavigationSystem.init();
+		ChatAssistant.init();
+
+		// Auto-scroll al contenido al cargar la página
+		setTimeout(() => {
+			const contentContainer = document.getElementById("content-container");
+			if (contentContainer) {
+				contentContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+			}
+		}, 500);
+	}
+
+	// Esperar a que el DOM esté listo
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initializePortfolio);
+	} else {
+		initializePortfolio();
+	}
 })();

@@ -1,0 +1,210 @@
+{
+  "name": "Portfolio AI Chat - OpenRouter",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "portfolio-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "0f2f1a9c-5c10-4e5c-9e22-portfolio-webhook",
+      "name": "Portfolio Chat Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -620,
+        0
+      ],
+      "webhookId": "portfolio-chat"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body ?? $json;\nconst question = String(input.message ?? input.question ?? '').trim();\nconst origin = String($json.headers?.origin ?? '').trim();\nconst forwardedFor = String($json.headers?.['x-forwarded-for'] ?? '').split(',')[0].trim();\nconst ip = forwardedFor || String($json.headers?.['x-real-ip'] ?? $json.headers?.['cf-connecting-ip'] ?? 'unknown');\nconst staticData = $getWorkflowStaticData('global');\nconst now = Date.now();\nconst windowMs = 60 * 60 * 1000;\nconst maxRequests = Number($env.PORTFOLIO_CHAT_MAX_REQUESTS_PER_HOUR || 20);\nstaticData.rateLimit = staticData.rateLimit || {};\nstaticData.rateLimit[ip] = (staticData.rateLimit[ip] || []).filter((timestamp) => now - timestamp < windowMs);\n\nif (staticData.rateLimit[ip].length >= maxRequests) {\n  return [{ json: { valid: false, statusCode: 429, answer: 'Llegaste al límite de preguntas por ahora. Intentá nuevamente más tarde.' } }];\n}\n\nstaticData.rateLimit[ip].push(now);\n\nif (!question) {\n  return [{ json: { valid: false, statusCode: 400, answer: 'Escribí una pregunta sobre Juan Gabriel, su experiencia, proyectos o habilidades.' } }];\n}\n\nif (question.length > 500) {\n  return [{ json: { valid: false, statusCode: 413, answer: 'La pregunta es demasiado larga. Intentá resumirla en menos de 500 caracteres.' } }];\n}\n\nconst portfolioContext = `\nJuan Gabriel Alfonso Rojas\nUbicación: Circasia, Quindío, Colombia.\nContacto: WhatsApp +57 3138751753, email juan.gabrie.dev@gmail.com, LinkedIn linkedin.com/in/juan-gabriel-alfonso-rojas, GitHub github.com/IamJuandev.\n\nPerfil profesional:\nEstudiante de 10mo semestre de Ingeniería en Sistemas y Técnico en Analítica de Datos. Tiene experiencia en desarrollo de software, infraestructura cloud con Oracle Cloud Infrastructure (OCI), automatización de procesos empresariales, integración de n8n, ERPs y APIs. Ha logrado reducciones de tiempos operativos de hasta 80%. Le interesa aplicar Inteligencia Artificial y análisis de datos para crear soluciones técnicas de impacto en eficiencia y rentabilidad.\n\nExperiencia:\n1. Consultor Informático / Desarrollador en VCE Consulting, agosto 2024 - actualidad. Automatizó procesos financieros con n8n y Dataico para emisión de facturas electrónicas, reduciendo procesamiento de 10 minutos a menos de 2 minutos por factura. Desarrolló gestión documental inteligente para recepción de facturas de proveedores, descarga de documentos, almacenamiento en Drive y registro de metadatos en ERP. Lideró portal de proveedores en Oracle APEX para consultar facturación, pagos y certificados de retención. Configuró infraestructura en OCI: Load Balancers, instancias, listeners y routing policies.\n2. Desarrollador Freelance, Proyecto Mini-ERP Restaurante, actualidad. Arquitectura y desarrollo integral de ERP a medida para gestión operativa y financiera, inventarios y ventas.\n3. Desarrollador Web Pasante en Universidad La Gran Colombia, enero 2023 - julio 2023. Desarrolló sistema de gestión de invitaciones con códigos QR para eventos institucionales. Programó plataformas internas con PHP y Laravel, incluyendo portal de centro de ayudas.\n\nFormación:\nIngeniería en Sistemas, CUN, 10mo semestre. Técnico en Analítica de Datos, SENA, en curso. Tecnólogo en Análisis y Desarrollo de Sistemas de Información, SENA, graduado 2023.\n\nHabilidades:\nAutomatización e IA: n8n, Prompt Engineering, IA Generativa, Analítica de Datos. Desarrollo y datos: PHP, Laravel, Oracle APEX, MySQL, JavaScript, HTML/CSS. Cloud y Ops: OCI, Oracle Linux, Load Balancers, SSL, Git. Integraciones: Dataico, DIAN Facturación Electrónica, ERPs, APIs. Idiomas: Español nativo, Inglés intermedio para lectura técnica.\n\nPosicionamiento adicional:\nJuan puede integrar IA en entornos empresariales para automatizar operaciones, analizar infraestructura, consultar conocimiento interno, asistir con logs, monitoreo, instalación de aplicaciones, flujos n8n, APIs y recuperación aumentada de información tipo RAG.\n`;\n\nconst systemPrompt = `Sos el asistente del portafolio profesional de Juan Gabriel Alfonso Rojas.\nRespondé en español, claro y breve.\nUsá únicamente el contexto provisto.\nPodés responder sobre perfil, experiencia, proyectos, educación, habilidades, contacto e integración de IA empresarial de Juan.\nSi la pregunta no tiene relación con Juan o su portafolio, respondé: \"Puedo ayudarte sólo con información profesional de Juan Gabriel Alfonso Rojas y su portafolio.\"\nNo inventes datos, empresas, títulos, certificaciones, enlaces ni proyectos.\nSi falta información, decí que no está especificada en el portafolio.\n\nContexto del portafolio:\n${portfolioContext}`;\n\nreturn [{\n  json: {\n    valid: true,\n    statusCode: 200,\n    origin,\n    question,\n    systemPrompt\n  }\n}];"
+      },
+      "id": "0c01f974-5846-4c66-90f6-validate-context",
+      "name": "Validate + Build Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.valid}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "1bb7fd05-d3a5-4b2e-bdd6-valid-check",
+      "name": "Valid Question?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "none",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.OPENROUTER_API_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "HTTP-Referer",
+              "value": "={{$env.PORTFOLIO_SITE_URL || 'https://iamjuandev.github.io/Portafolio/'}}"
+            },
+            {
+              "name": "X-Title",
+              "value": "Juan Gabriel Portfolio Chat"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { model: $env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001', temperature: 0.2, max_tokens: 450, messages: [{ role: 'system', content: $json.systemPrompt }, { role: 'user', content: $json.question }] } }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "2d31b9bc-4eea-4ca0-92ef-openrouter-call",
+      "name": "Ask OpenRouter",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        120,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const choice = $json.choices?.[0]?.message?.content;\nreturn [{\n  json: {\n    answer: choice || 'No pude generar una respuesta en este momento. Intentá de nuevo.',\n    statusCode: 200\n  }\n}];"
+      },
+      "id": "32b38b64-d7c5-4100-8df7-format-answer",
+      "name": "Format AI Answer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { answer: $json.answer } }}",
+        "options": {
+          "responseCode": "={{$json.statusCode || 200}}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "={{$env.PORTFOLIO_ALLOWED_ORIGIN || '*'}}"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "60f51418-2c7a-4554-8f6d-respond-ok",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Portfolio Chat Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate + Build Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate + Build Context": {
+      "main": [
+        [
+          {
+            "node": "Valid Question?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Question?": {
+      "main": [
+        [
+          {
+            "node": "Ask OpenRouter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask OpenRouter": {
+      "main": [
+        [
+          {
+            "node": "Format AI Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format AI Answer": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {},
+  "active": false,
+  "versionId": "portfolio-chat-openrouter-v1"
+}
