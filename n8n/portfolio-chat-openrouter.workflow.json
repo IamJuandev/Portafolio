@@ -1,5 +1,4 @@
 {
-  "name": "Portfolio AI Chat - OpenRouter",
   "nodes": [
     {
       "parameters": {
@@ -8,27 +7,27 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "0f2f1a9c-5c10-4e5c-9e22-portfolio-webhook",
+      "id": "b6b36fcf-4e52-41c4-b3e1-1e86da52d0b6",
       "name": "Portfolio Chat Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -620,
-        0
+        -760,
+        80
       ],
       "webhookId": "portfolio-chat"
     },
     {
       "parameters": {
-        "jsCode": "const input = $json.body ?? $json;\nconst question = String(input.message ?? input.question ?? '').trim();\nconst origin = String($json.headers?.origin ?? '').trim();\nconst forwardedFor = String($json.headers?.['x-forwarded-for'] ?? '').split(',')[0].trim();\nconst ip = forwardedFor || String($json.headers?.['x-real-ip'] ?? $json.headers?.['cf-connecting-ip'] ?? 'unknown');\nconst staticData = $getWorkflowStaticData('global');\nconst now = Date.now();\nconst windowMs = 60 * 60 * 1000;\nconst maxRequests = Number($env.PORTFOLIO_CHAT_MAX_REQUESTS_PER_HOUR || 20);\nstaticData.rateLimit = staticData.rateLimit || {};\nstaticData.rateLimit[ip] = (staticData.rateLimit[ip] || []).filter((timestamp) => now - timestamp < windowMs);\n\nif (staticData.rateLimit[ip].length >= maxRequests) {\n  return [{ json: { valid: false, statusCode: 429, answer: 'Llegaste al límite de preguntas por ahora. Intentá nuevamente más tarde.' } }];\n}\n\nstaticData.rateLimit[ip].push(now);\n\nif (!question) {\n  return [{ json: { valid: false, statusCode: 400, answer: 'Escribí una pregunta sobre Juan Gabriel, su experiencia, proyectos o habilidades.' } }];\n}\n\nif (question.length > 500) {\n  return [{ json: { valid: false, statusCode: 413, answer: 'La pregunta es demasiado larga. Intentá resumirla en menos de 500 caracteres.' } }];\n}\n\nconst portfolioContext = `\nJuan Gabriel Alfonso Rojas\nUbicación: Circasia, Quindío, Colombia.\nContacto: WhatsApp +57 3138751753, email juan.gabrie.dev@gmail.com, LinkedIn linkedin.com/in/juan-gabriel-alfonso-rojas, GitHub github.com/IamJuandev.\n\nPerfil profesional:\nEstudiante de 10mo semestre de Ingeniería en Sistemas y Técnico en Analítica de Datos. Tiene experiencia en desarrollo de software, infraestructura cloud con Oracle Cloud Infrastructure (OCI), automatización de procesos empresariales, integración de n8n, ERPs y APIs. Ha logrado reducciones de tiempos operativos de hasta 80%. Le interesa aplicar Inteligencia Artificial y análisis de datos para crear soluciones técnicas de impacto en eficiencia y rentabilidad.\n\nExperiencia:\n1. Consultor Informático / Desarrollador en VCE Consulting, agosto 2024 - actualidad. Automatizó procesos financieros con n8n y Dataico para emisión de facturas electrónicas, reduciendo procesamiento de 10 minutos a menos de 2 minutos por factura. Desarrolló gestión documental inteligente para recepción de facturas de proveedores, descarga de documentos, almacenamiento en Drive y registro de metadatos en ERP. Lideró portal de proveedores en Oracle APEX para consultar facturación, pagos y certificados de retención. Configuró infraestructura en OCI: Load Balancers, instancias, listeners y routing policies.\n2. Desarrollador Freelance, Proyecto Mini-ERP Restaurante, actualidad. Arquitectura y desarrollo integral de ERP a medida para gestión operativa y financiera, inventarios y ventas.\n3. Desarrollador Web Pasante en Universidad La Gran Colombia, enero 2023 - julio 2023. Desarrolló sistema de gestión de invitaciones con códigos QR para eventos institucionales. Programó plataformas internas con PHP y Laravel, incluyendo portal de centro de ayudas.\n\nFormación:\nIngeniería en Sistemas, CUN, 10mo semestre. Técnico en Analítica de Datos, SENA, en curso. Tecnólogo en Análisis y Desarrollo de Sistemas de Información, SENA, graduado 2023.\n\nHabilidades:\nAutomatización e IA: n8n, Prompt Engineering, IA Generativa, Analítica de Datos. Desarrollo y datos: PHP, Laravel, Oracle APEX, MySQL, JavaScript, HTML/CSS. Cloud y Ops: OCI, Oracle Linux, Load Balancers, SSL, Git. Integraciones: Dataico, DIAN Facturación Electrónica, ERPs, APIs. Idiomas: Español nativo, Inglés intermedio para lectura técnica.\n\nPosicionamiento adicional:\nJuan puede integrar IA en entornos empresariales para automatizar operaciones, analizar infraestructura, consultar conocimiento interno, asistir con logs, monitoreo, instalación de aplicaciones, flujos n8n, APIs y recuperación aumentada de información tipo RAG.\n`;\n\nconst systemPrompt = `Sos el asistente del portafolio profesional de Juan Gabriel Alfonso Rojas.\nRespondé en español, claro y breve.\nUsá únicamente el contexto provisto.\nPodés responder sobre perfil, experiencia, proyectos, educación, habilidades, contacto e integración de IA empresarial de Juan.\nSi la pregunta no tiene relación con Juan o su portafolio, respondé: \"Puedo ayudarte sólo con información profesional de Juan Gabriel Alfonso Rojas y su portafolio.\"\nNo inventes datos, empresas, títulos, certificaciones, enlaces ni proyectos.\nSi falta información, decí que no está especificada en el portafolio.\n\nContexto del portafolio:\n${portfolioContext}`;\n\nreturn [{\n  json: {\n    valid: true,\n    statusCode: 200,\n    origin,\n    question,\n    systemPrompt\n  }\n}];"
+        "jsCode": "const input = $json.body ?? $json;\nconst question = String(input.message ?? input.question ?? '').trim();\nconst origin = String($json.headers?.origin ?? '').trim();\nconst forwardedFor = String($json.headers?.['x-forwarded-for'] ?? '').split(',')[0].trim();\nconst ip = forwardedFor || String($json.headers?.['x-real-ip'] ?? $json.headers?.['cf-connecting-ip'] ?? 'unknown');\nconst staticData = $getWorkflowStaticData('global');\nconst now = Date.now();\nconst windowMs = 60 * 60 * 1000;\nconst maxRequests = Number($env.PORTFOLIO_CHAT_MAX_REQUESTS_PER_HOUR || 20);\nstaticData.rateLimit = staticData.rateLimit || {};\nstaticData.rateLimit[ip] = (staticData.rateLimit[ip] || []).filter((timestamp) => now - timestamp < windowMs);\n\nif (staticData.rateLimit[ip].length >= maxRequests) {\n  return [{ json: { valid: false, statusCode: 429, answer: 'Llegaste al límite de preguntas por ahora. Intentá nuevamente más tarde.' } }];\n}\n\nif (!question) {\n  return [{ json: { valid: false, statusCode: 400, answer: 'Escribí una pregunta sobre Juan Gabriel, su experiencia, proyectos o habilidades.' } }];\n}\n\nif (question.length > 500) {\n  return [{ json: { valid: false, statusCode: 413, answer: 'La pregunta es demasiado larga. Intentá resumirla en menos de 500 caracteres.' } }];\n}\n\nstaticData.rateLimit[ip].push(now);\nconst normalizedQuestion = question\n  .toLowerCase()\n  .normalize('NFD')\n  .replace(/[\\u0300-\\u036f]/g, '')\n  .replace(/[^a-z0-9ñ\\s]/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\nreturn [{\n  json: {\n    valid: true,\n    statusCode: 200,\n    origin,\n    ip,\n    question,\n    normalizedQuestion\n  }\n}];"
       },
-      "id": "0c01f974-5846-4c66-90f6-validate-context",
-      "name": "Validate + Build Context",
+      "id": "d56856a6-42fc-4ad3-9b7c-5326011c5eb2",
+      "name": "Validate + Normalize Question",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -380,
-        0
+        -520,
+        80
       ]
     },
     {
@@ -42,69 +41,124 @@
           ]
         }
       },
-      "id": "1bb7fd05-d3a5-4b2e-bdd6-valid-check",
+      "id": "620b382b-d770-4cde-ae25-c55aed50233e",
       "name": "Valid Question?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -140,
-        0
+        -280,
+        80
       ]
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "https://openrouter.ai/api/v1/chat/completions",
-        "authentication": "none",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
+        "operation": "executeQuery",
+        "query": "={{ `WITH input AS (\n  SELECT '${$json.normalizedQuestion.replace(/'/g, \"''\")}'::text AS normalized_question,\n         '${$json.question.replace(/'/g, \"''\")}'::text AS question\n), cache_hit AS (\n  UPDATE portfolio_ai.chat_cache c\n  SET hits = hits + 1, updated_at = now()\n  FROM input i\n  WHERE c.normalized_question = i.normalized_question\n  RETURNING c.answer\n), fact_map AS (\n  SELECT COALESCE(jsonb_object_agg(key, value), '{}'::jsonb) AS data\n  FROM portfolio_ai.facts\n), fact_details AS (\n  SELECT COALESCE(\n    jsonb_object_agg(\n      key,\n      jsonb_build_object(\n        'category', category,\n        'value', value,\n        'metadata', metadata,\n        'updated_at', updated_at\n      )\n    ),\n    '{}'::jsonb\n  ) AS data\n  FROM portfolio_ai.facts\n), years_calc AS (\n  SELECT\n    date_part('year', age(current_date, value::date))::int AS years,\n    date_part('month', age(current_date, value::date))::int AS months,\n    value::date AS start_date\n  FROM portfolio_ai.facts\n  WHERE key = 'experience_start_date'\n), deterministic AS (\n  SELECT CASE\n    WHEN i.normalized_question ~ '(cuanto|cuantos|anos|años|tiempo).*(experiencia|exp)' OR i.normalized_question ~ '(experiencia|exp).*(cuanto|cuantos|anos|años|tiempo)' THEN\n      'Juan Gabriel tiene aproximadamente ' || date_part('year', age(current_date, COALESCE(y.start_date, date '2023-01-01')))::int || ' años' || CASE WHEN date_part('month', age(current_date, COALESCE(y.start_date, date '2023-01-01')))::int > 0 THEN ' y ' || date_part('month', age(current_date, COALESCE(y.start_date, date '2023-01-01')))::int || ' meses' ELSE '' END || ' de experiencia profesional, contando desde enero de 2023. Su trayectoria incluye desarrollo web, automatización, OCI, n8n, Oracle APEX, integraciones empresariales e IA aplicada a operaciones.'\n    WHEN i.normalized_question ~ '(ia|inteligencia artificial|ai|agente|agentes|rag|notebooklm|logs|linux|monitoreo|infraestructura)' THEN\n      COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'ai_experience'), 'Juan Gabriel aplica IA y agentes para análisis de logs, monitoreo de infraestructura Linux, documentación operativa y bases de conocimiento/RAG con NotebookLM.')\n    WHEN i.normalized_question ~ '(anthropic|claude|certificado|certificacion|certificación|curso|cursos)' THEN\n      COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'anthropic_academy'), 'Juan Gabriel está en formación continua en Anthropic Academy.') || ' Certificados: https://verify.skilljar.com/c/gjzgxucb6erf y https://verify.skilljar.com/c/xzddkpb4vvhr.'\n    WHEN i.normalized_question ~ '(trabaja|actual|cargo|rol|empresa)' THEN\n      'Juan Gabriel trabaja actualmente como ' || COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'current_role'), 'Consultor Informático / Desarrollador en VCE Consulting') || '.'\n    WHEN i.normalized_question ~ '(contacto|correo|email|whatsapp|linkedin|github)' THEN\n      'Podés contactar a Juan por email: ' || COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'email'), 'juan.gabrie.dev@gmail.com') || ', WhatsApp: ' || COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'phone'), '+57 3138751753') || ', LinkedIn: ' || COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'linkedin'), 'https://linkedin.com/in/juan-gabriel-alfonso-rojas') || ' y GitHub: ' || COALESCE((SELECT value FROM portfolio_ai.facts WHERE key = 'github'), 'https://github.com/IamJuandev') || '.'\n    ELSE NULL\n  END AS answer\n  FROM input i\n  LEFT JOIN years_calc y ON true\n), experiences AS (\n  SELECT COALESCE(jsonb_agg(to_jsonb(e) - 'sort_order' ORDER BY sort_order), '[]'::jsonb) AS data FROM portfolio_ai.experience e\n), projects AS (\n  SELECT COALESCE(jsonb_agg(to_jsonb(p) - 'sort_order' ORDER BY sort_order), '[]'::jsonb) AS data FROM portfolio_ai.projects p\n), education AS (\n  SELECT COALESCE(jsonb_agg(to_jsonb(ed) - 'sort_order' ORDER BY sort_order), '[]'::jsonb) AS data FROM portfolio_ai.education ed\n)\nSELECT\n  COALESCE((SELECT answer FROM deterministic LIMIT 1), (SELECT answer FROM cache_hit LIMIT 1)) AS direct_answer,\n  CASE\n    WHEN (SELECT answer FROM deterministic LIMIT 1) IS NOT NULL THEN 'deterministic'\n    WHEN EXISTS (SELECT 1 FROM cache_hit) THEN 'cache'\n    ELSE 'ai'\n  END AS answer_source,\n  (SELECT data FROM fact_map) AS facts_json,\n  (SELECT data FROM fact_details) AS fact_details_json,\n  (SELECT data FROM experiences) AS experience_json,\n  (SELECT data FROM projects) AS projects_json,\n  (SELECT data FROM education) AS education_json,\n  (SELECT normalized_question FROM input) AS normalized_question,\n  (SELECT question FROM input) AS question;` }}",
+        "options": {}
+      },
+      "id": "3f0911e1-4503-498f-8a8f-load-db",
+      "name": "Load Portfolio Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -20,
+        -48
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "name": "Portfolio Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const row = $json;\nconst question = row.question || $('Validate + Normalize Question').item.json.question;\nconst normalizedQuestion = row.normalized_question || $('Validate + Normalize Question').item.json.normalizedQuestion;\n\nif (row.direct_answer) {\n  return [{\n    json: {\n      answer: row.direct_answer,\n      statusCode: 200,\n      source: row.answer_source || 'database',\n      question,\n      normalizedQuestion\n    }\n  }];\n}\n\nconst facts = row.facts_json || {};\nconst factDetails = row.fact_details_json || {};\nconst experience = row.experience_json || [];\nconst projects = row.projects_json || [];\nconst education = row.education_json || [];\n\nconst dbContext = JSON.stringify({ facts, factDetails, experience, projects, education }, null, 2);\nconst systemPrompt = `Sos el asistente del portafolio profesional de Juan Gabriel Alfonso Rojas.\nRespondé en español, claro y breve.\nUsá únicamente el contexto estructurado proveniente de PostgreSQL.\nPodés responder sobre perfil, experiencia, proyectos, educación, habilidades, contacto, IA aplicada, agentes IA, RAG/NotebookLM, monitoreo de infraestructura Linux, análisis de logs y formación Anthropic de Juan.\nSi preguntan por datos exactos, respetá los facts y factDetails; no calcules libremente.\nSi preguntan por certificaciones o cursos, usá sólo los enlaces y estado presentes en factDetails o education.\nSi la pregunta no tiene relación con Juan o su portafolio, respondé: \"Puedo ayudarte sólo con información profesional de Juan Gabriel Alfonso Rojas y su portafolio.\"\nNo inventes datos, empresas, títulos, certificaciones, enlaces ni proyectos.\nNo incluyas etiquetas como <assistant>, </assistant>, <user>, <system> ni tokens especiales.\nRespondé sólo el texto final visible para el visitante.\n\nContexto PostgreSQL:\n${dbContext}`;\n\nreturn [{\n  json: {\n    valid: true,\n    question,\n    normalizedQuestion,\n    systemPrompt,\n    source: 'ai'\n  }\n}];"
+      },
+      "id": "57c6477b-63bb-4a65-889a-build-context",
+      "name": "Build DB Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
             {
-              "name": "Authorization",
-              "value": "=Bearer {{$env.OPENROUTER_API_KEY}}"
-            },
+              "value1": "={{$json.answer || ''}}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "65c21b58-87fa-4df4-a4a7-direct",
+      "name": "Has Direct Answer?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.question }}",
+        "messages": {
+          "messageValues": [
             {
-              "name": "Content-Type",
-              "value": "application/json"
-            },
-            {
-              "name": "HTTP-Referer",
-              "value": "={{$env.PORTFOLIO_SITE_URL || 'https://iamjuandev.github.io/Portafolio/'}}"
-            },
-            {
-              "name": "X-Title",
-              "value": "Juan Gabriel Portfolio Chat"
+              "message": "={{ $json.systemPrompt }}"
             }
           ]
         },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ { model: $env.OPENROUTER_MODEL || 'google/gemini-2.0-flash-001', temperature: 0.2, max_tokens: 450, messages: [{ role: 'system', content: $json.systemPrompt }, { role: 'user', content: $json.question }] } }}",
-        "options": {
-          "timeout": 30000
-        }
+        "batching": {}
       },
-      "id": "2d31b9bc-4eea-4ca0-92ef-openrouter-call",
-      "name": "Ask OpenRouter",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
       "position": [
-        120,
-        -100
-      ]
+        700,
+        -160
+      ],
+      "id": "b074049f-2759-4b18-8983-4de71d1878aa",
+      "name": "Basic LLM Chain"
     },
     {
       "parameters": {
-        "jsCode": "const choice = $json.choices?.[0]?.message?.content;\nreturn [{\n  json: {\n    answer: choice || 'No pude generar una respuesta en este momento. Intentá de nuevo.',\n    statusCode: 200\n  }\n}];"
+        "jsCode": "let answer =\n  $json.text ||\n  $json.output ||\n  $json.answer ||\n  $json.choices?.[0]?.message?.content ||\n  'No pude generar una respuesta en este momento. Intentá de nuevo.';\n\nanswer = String(answer)\n  .replace(/<\\/?assistant>/gi, '')\n  .replace(/<\\/?user>/gi, '')\n  .replace(/<\\/?system>/gi, '')\n  .replace(/<\\|.*?\\|>/g, '')\n  .trim();\n\nreturn [\n  {\n    json: {\n      answer,\n      statusCode: 200,\n    },\n  },\n];"
       },
-      "id": "32b38b64-d7c5-4100-8df7-format-answer",
+      "id": "6a452a30-4125-4e85-b3be-8b747f609a4d",
       "name": "Format AI Answer",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        380,
-        -100
+        1040,
+        -160
       ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ `WITH upsert AS (\n  INSERT INTO portfolio_ai.chat_cache (normalized_question, question, answer, source)\n  VALUES (\n    '${$('Build DB Context').item.json.normalizedQuestion.replace(/'/g, \"''\")}',\n    '${$('Build DB Context').item.json.question.replace(/'/g, \"''\")}',\n    '${$json.answer.replace(/'/g, \"''\")}',\n    'ai'\n  )\n  ON CONFLICT (normalized_question) DO UPDATE SET\n    answer = EXCLUDED.answer,\n    question = EXCLUDED.question,\n    source = EXCLUDED.source,\n    updated_at = now()\n  RETURNING answer\n), log AS (\n  INSERT INTO portfolio_ai.chat_logs (normalized_question, question, answer, source)\n  SELECT\n    '${$('Build DB Context').item.json.normalizedQuestion.replace(/'/g, \"''\")}',\n    '${$('Build DB Context').item.json.question.replace(/'/g, \"''\")}',\n    answer,\n    'ai'\n  FROM upsert\n  RETURNING 1\n)\nSELECT (SELECT answer FROM upsert) AS answer, 200 AS \"statusCode\";` }}",
+        "options": {}
+      },
+      "id": "f84ce6c4-16fe-4d39-a570-save-cache",
+      "name": "Save AI Answer Cache",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1280,
+        -160
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "name": "Portfolio Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -116,7 +170,7 @@
             "entries": [
               {
                 "name": "Access-Control-Allow-Origin",
-                "value": "={{$env.PORTFOLIO_ALLOWED_ORIGIN || '*'}}"
+                "value": "https://iamjuandev.github.io"
               },
               {
                 "name": "Access-Control-Allow-Headers",
@@ -126,14 +180,33 @@
           }
         }
       },
-      "id": "60f51418-2c7a-4554-8f6d-respond-ok",
+      "id": "c1c2a84f-f55e-4af4-884a-32142dedfd8b",
       "name": "Respond",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        640,
-        0
+        1520,
+        80
       ]
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        760,
+        144
+      ],
+      "id": "eac62aa3-b957-45b0-9b76-334eba98017b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "name": "OpenRouter account"
+        }
+      }
     }
   ],
   "connections": {
@@ -141,14 +214,14 @@
       "main": [
         [
           {
-            "node": "Validate + Build Context",
+            "node": "Validate + Normalize Question",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Validate + Build Context": {
+    "Validate + Normalize Question": {
       "main": [
         [
           {
@@ -163,7 +236,7 @@
       "main": [
         [
           {
-            "node": "Ask OpenRouter",
+            "node": "Load Portfolio Data",
             "type": "main",
             "index": 0
           }
@@ -177,7 +250,47 @@
         ]
       ]
     },
-    "Ask OpenRouter": {
+    "Load Portfolio Data": {
+      "main": [
+        [
+          {
+            "node": "Build DB Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build DB Context": {
+      "main": [
+        [
+          {
+            "node": "Has Direct Answer?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Direct Answer?": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
       "main": [
         [
           {
@@ -192,19 +305,36 @@
       "main": [
         [
           {
+            "node": "Save AI Answer Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save AI Answer Cache": {
+      "main": [
+        [
+          {
             "node": "Respond",
             "type": "main",
             "index": 0
           }
         ]
       ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "settings": {
-    "executionOrder": "v1"
-  },
-  "staticData": null,
   "pinData": {},
-  "active": false,
-  "versionId": "portfolio-chat-openrouter-v1"
+  "name": "Portfolio AI Chat - OpenRouter + PostgreSQL"
 }
