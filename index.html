@@ -31,7 +31,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="./style.css?v=20260806b" />
+    <link rel="stylesheet" href="./style.css?v=20260806c" />
   </head>
   <body class="bg-gray-900 text-white antialiased">
     <div id="particle-container"></div>
@@ -1210,7 +1210,12 @@
       </div>
     </main>
 
-    <div id="ai-chat" class="fixed bottom-4 right-4 z-50">
+    <!-- column-reverse: the panel opens above the button, so the button stays
+         anchored to the corner instead of jumping up when the chat opens. -->
+    <div
+      id="ai-chat"
+      class="fixed bottom-4 right-4 z-50 flex flex-col-reverse items-end gap-3"
+    >
       <button id="ai-chat-toggle" type="button" class="button">
         <div class="dots_border"></div>
         <svg
@@ -1243,7 +1248,7 @@
       </button>
       <div
         id="ai-chat-panel"
-        class="hidden mt-3 w-[min(28rem,calc(100vw-2rem))] bg-gray-900/95 border border-white/20 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden backdrop-blur"
+        class="hidden w-[min(28rem,calc(100vw-2rem))] bg-gray-900/95 border border-white/20 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden backdrop-blur"
       >
         <div class="p-4 border-b border-white/10">
           <h2 class="text-base font-bold text-white">
@@ -1255,7 +1260,7 @@
         </div>
         <div
           id="ai-chat-messages"
-          class="h-[min(28rem,60vh)] overflow-y-auto p-4 space-y-3 text-sm"
+          class="h-[40vh] sm:h-[min(28rem,60vh)] overflow-y-auto p-4 space-y-3 text-sm"
         >
           <div class="p-3 rounded-xl bg-white/10 text-gray-200">
             Hola, soy el asistente IA de Juan. ¿Qué querés saber sobre su perfil
