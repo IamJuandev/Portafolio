@@ -292,6 +292,21 @@
 		webhookUrl: "https://n8n.arkanis.site/webhook/portfolio-chat",
 		isSending: false,
 
+		// Identifies this tab so the assistant can follow up on earlier turns.
+		// sessionStorage, not localStorage: the conversation ends with the tab.
+		getChatId() {
+			const key = "portfolio-chat-id";
+			let chatId = sessionStorage.getItem(key);
+			if (!chatId) {
+				chatId =
+					typeof crypto !== "undefined" && crypto.randomUUID
+						? crypto.randomUUID()
+						: `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+				sessionStorage.setItem(key, chatId);
+			}
+			return chatId;
+		},
+
 		init() {
 			this.toggle = document.getElementById("ai-chat-toggle");
 			this.panel = document.getElementById("ai-chat-panel");
@@ -336,7 +351,7 @@
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
 					},
-					body: new URLSearchParams({ message }),
+					body: new URLSearchParams({ message, chatId: this.getChatId() }),
 				});
 
 				const data = await response.json().catch(() => ({}));
