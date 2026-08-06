@@ -355,8 +355,10 @@
 				});
 
 				const data = await response.json().catch(() => ({}));
-				loadingMessage.textContent =
-					data.answer || "No pude responder en este momento. Intentá de nuevo.";
+				this.setMessage(
+					loadingMessage,
+					data.answer || "No pude responder en este momento. Intentá de nuevo.",
+				);
 			} catch (error) {
 				loadingMessage.textContent =
 					"No pude conectar con el asistente. Revisá que el workflow de n8n esté activo.";
@@ -366,16 +368,93 @@
 			}
 		},
 
+		// The assistant replies in Markdown. Escaping runs first and the tags are
+		// built here, so anything the model emits stays inert text — the reply is
+		// shaped by visitor input, which makes raw innerHTML an XSS route.
+		renderMarkdown(text) {
+			const escape = (value) =>
+				String(value)
+					.replace(/&/g, "&amp;")
+					.replace(/</g, "&lt;")
+					.replace(/>/g, "&gt;")
+					.replace(/"/g, "&quot;");
+
+			const inline = (line) =>
+				escape(line)
+					.replace(/`([^`]+)`/g, '<code class="px-1 rounded bg-black/30 text-teal-300">$1</code>')
+					.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+					.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+					.replace(
+						/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+						'<a href="$2" target="_blank" rel="noopener noreferrer" class="text-teal-300 underline">$1</a>',
+					)
+					// Bare URLs, skipping the ones already turned into anchors above.
+					.replace(
+						/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
+						'$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-teal-300 underline">$2</a>',
+					);
+
+			const html = [];
+			let listItems = [];
+
+			const flushList = () => {
+				if (!listItems.length) return;
+				html.push(
+					`<ul class="list-disc pl-5 space-y-1 my-2">${listItems.join("")}</ul>`,
+				);
+				listItems = [];
+			};
+
+			for (const rawLine of String(text).split("\n")) {
+				const line = rawLine.trim();
+
+				if (!line) {
+					flushList();
+					continue;
+				}
+
+				const bullet = line.match(/^[-*]\s+(.*)$/);
+				if (bullet) {
+					listItems.push(`<li>${inline(bullet[1])}</li>`);
+					continue;
+				}
+
+				const heading = line.match(/^#{1,6}\s+(.*)$/);
+				if (heading) {
+					flushList();
+					html.push(`<p class="font-bold mt-2">${inline(heading[1])}</p>`);
+					continue;
+				}
+
+				flushList();
+				html.push(`<p class="my-1">${inline(line)}</p>`);
+			}
+
+			flushList();
+			return html.join("");
+		},
+
 		addMessage(text, sender) {
 			const bubble = document.createElement("div");
 			bubble.className =
 				sender === "user"
 					? "p-3 rounded-xl bg-teal-500 text-gray-900 ml-8"
-					: "p-3 rounded-xl bg-white/10 text-gray-200 mr-8";
-			bubble.textContent = text;
+					: "p-3 rounded-xl bg-white/10 text-gray-200 mr-8 leading-relaxed";
+
+			if (sender === "user") {
+				bubble.textContent = text;
+			} else {
+				bubble.innerHTML = this.renderMarkdown(text);
+			}
+
 			this.messages.appendChild(bubble);
 			this.scrollToBottom();
 			return bubble;
+		},
+
+		setMessage(bubble, text) {
+			bubble.innerHTML = this.renderMarkdown(text);
+			this.scrollToBottom();
 		},
 
 		scrollToBottom() {
