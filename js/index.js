@@ -345,6 +345,11 @@
 			const loadingMessage = this.addMessage("Pensando...", "assistant");
 			this.isSending = true;
 
+			// Without a deadline a stalled request leaves the bubble on "Pensando..."
+			// forever: neither branch below runs while the promise stays pending.
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 60000);
+
 			try {
 				const response = await fetch(this.webhookUrl, {
 					method: "POST",
@@ -352,6 +357,7 @@
 						"Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
 					},
 					body: new URLSearchParams({ message, chatId: this.getChatId() }),
+					signal: controller.signal,
 				});
 
 				const data = await response.json().catch(() => ({}));
@@ -361,8 +367,11 @@
 				);
 			} catch (error) {
 				loadingMessage.textContent =
-					"No pude conectar con el asistente. Revisá que el workflow de n8n esté activo.";
+					error.name === "AbortError"
+						? "La respuesta está tardando más de lo normal. Probá de nuevo en un momento."
+						: "No pude conectar con el asistente. Intentá de nuevo en un momento.";
 			} finally {
+				clearTimeout(timeoutId);
 				this.isSending = false;
 				this.scrollToBottom();
 			}
