@@ -1,61 +1,123 @@
-# Portfolio AI Chat with n8n + OpenRouter
+# Portfolio AI Chat
 
-This folder contains an importable n8n workflow for the portfolio chat.
+The assistant on the portfolio is an **opencode agent running in an isolated
+container**, reached through an n8n workflow. It answers questions about Juan's
+experience, projects, education, and contact channels.
 
-## Security rule
+```
+Browser (GitHub Pages)
+   └─ POST /webhook/portfolio-chat   { message, chatId }
+        └─ n8n workflow
+             ├─ Redis      chat:<chatId> → { session, turn count }
+             └─ opencode   POST /session/<id>/message
+```
 
-Do **not** put the OpenRouter API key in GitHub Pages or frontend JavaScript. Keep it only in the n8n server environment.
+## Why there is no database
 
-## Required n8n environment variables
+Earlier versions loaded the profile from PostgreSQL, then from Oracle with
+vector search. Both were removed.
 
-Add these to your n8n VPS/OCI environment:
+The whole profile is about 4,700 tokens. Retrieval exists for corpora that do
+not fit in context; a single person's CV does. Keeping it in one file removes
+the database, the query layer, and the second source of truth — updating the
+profile is editing Markdown, not running SQL.
+
+## Components
+
+### opencode container
+
+Runs `opencode serve` behind HTTP basic auth. Reachable only from n8n over the
+`dokploy-network` alias `portfolio-agent`; it publishes no ports.
+
+The agent holds **no tools**. `bash`, `edit`, `read`, `webfetch`, and `task`
+are set to `deny` in `opencode.json`, so it is a text generator, not an agent
+with a shell. It also carries no credentials: the OpenCode Zen free models
+answer anonymously.
+
+The profile lives in `AGENTS.md`, which opencode injects as instructions. It is
+deliberately not a separate file the agent reads, because `read` is denied.
+
+Prompt rules define scope and tone. They are **not** a security boundary — a
+prompt injection can talk the model out of any instruction. Containment comes
+from the container holding nothing worth taking: no tools, no secrets, and a
+profile that is already public.
+
+### Redis
+
+One key per visitor, `chat:<chatId>`, holding the opencode session id and the
+turn count, with a 30 minute sliding TTL.
+
+The frontend generates `chatId` with `crypto.randomUUID()` and keeps it in
+`sessionStorage`, so a conversation ends with the tab.
+
+Keys are partitioned per visitor, so concurrent visitors never touch the same
+key and no locking is needed.
+
+### Session janitor
+
+A scheduled workflow runs hourly, lists opencode sessions, and deletes any idle
+for more than 30 minutes — the same threshold as the Redis TTL, so it can never
+reclaim a session someone could still resume.
+
+This is what bounds growth. When a visitor closes the tab their Redis key
+expires, but the opencode session would otherwise remain forever.
+
+## Workflow
+
+`Portfolio AI Chat - opencode agent`
+
+1. **Webhook** — `POST /webhook/portfolio-chat`
+2. **Validate + Normalize** — rate limit per IP, length cap of 500 characters,
+   and `chatId` validation against `/^[A-Za-z0-9-]{8,64}$/` (it becomes a Redis
+   key, so it is never trusted as sent)
+3. **Get Chat State** — Redis lookup
+4. **Plan Session** — reuse, or rotate after 20 turns
+5. **Rotate** — delete the old opencode session, create a new one
+6. **Save Chat State** — Redis write with a fresh TTL
+7. **Ask Portfolio Agent** — `POST /session/<id>/message`
+8. **Format** — keeps only `text` parts; `reasoning` parts never reach visitors
+9. **Respond** — JSON with CORS for the portfolio origin
+
+## Configuration
+
+Container environment:
 
 ```bash
-OPENROUTER_API_KEY=OPENROUTER_API_KEY_GOES_HERE
-OPENROUTER_MODEL=google/gemini-2.0-flash-001
-PORTFOLIO_SITE_URL=https://iamjuandev.github.io/Portafolio/
-PORTFOLIO_ALLOWED_ORIGIN=https://iamjuandev.github.io
+OPENCODE_MODEL=opencode/big-pickle
+OPENCODE_SERVER_USERNAME=opencode
+OPENCODE_SERVER_PASSWORD=...        # generated, never committed
+```
+
+`OPENCODE_MODEL` is an environment variable on purpose: the Zen free models are
+a time-limited beta and can disappear, so swapping one is a redeploy rather
+than an image rebuild.
+
+n8n environment:
+
+```bash
 PORTFOLIO_CHAT_MAX_REQUESTS_PER_HOUR=20
 ```
 
-If you run n8n with Docker Compose, add them under `environment:` for the n8n service and restart the container.
+## Updating the profile
 
-## Import steps
+Edit `AGENTS.md`, then rebuild and redeploy — Dokploy's raw compose has no build
+context, so it consumes the image tag:
 
-1. Open n8n.
-2. Import `portfolio-chat-openrouter.workflow.json`.
-3. Confirm the `Portfolio Chat Webhook` path is `portfolio-chat`.
-4. Activate the workflow.
-5. Copy the **production** webhook URL. It usually looks like:
-
-```txt
-https://your-n8n-domain.com/webhook/portfolio-chat
+```bash
+docker build -t portfolio-agent:1 .
 ```
 
-6. Paste that URL into `js/index.js` in `ChatAssistant.webhookUrl`.
-
-## Expected request
-
-The portfolio frontend sends:
+## Request and response
 
 ```json
-{
-  "message": "¿Qué experiencia tiene Juan con n8n?"
-}
+{ "message": "¿Qué experiencia tiene Juan con n8n?", "chatId": "..." }
 ```
-
-## Expected response
-
-n8n returns:
 
 ```json
-{
-  "answer": "Juan ha usado n8n para automatizar procesos financieros..."
-}
+{ "answer": "Juan diseñó e implementó flujos con n8n y Dataico..." }
 ```
 
-## Notes
+## Legacy files
 
-- The workflow limits questions to 500 characters.
-- The assistant is constrained to answer only about Juan Gabriel Alfonso Rojas and his portfolio.
-- The workflow includes a basic per-IP hourly limit using n8n static data. For stronger production protection, also add rate limiting at the reverse proxy level, for example Nginx `limit_req` or Cloudflare WAF.
+`portfolio-chat-openrouter.workflow.json` and `postgres/` belong to the
+PostgreSQL version and are kept only as history. Neither is deployed.
