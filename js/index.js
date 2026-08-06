@@ -382,7 +382,10 @@
 			const inline = (line) =>
 				escape(line)
 					.replace(/`([^`]+)`/g, '<code class="px-1 rounded bg-black/30 text-teal-300">$1</code>')
-					.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+					.replace(
+						/\*\*([^*]+)\*\*/g,
+						'<strong class="font-semibold text-teal-300">$1</strong>',
+					)
 					.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
 					.replace(
 						/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
@@ -397,11 +400,11 @@
 			const html = [];
 			let listItems = [];
 
+			// Custom markers instead of list-disc: a teal dot aligned to the first
+			// line reads better than a grey bullet against the dark bubble.
 			const flushList = () => {
 				if (!listItems.length) return;
-				html.push(
-					`<ul class="list-disc pl-5 space-y-1 my-2">${listItems.join("")}</ul>`,
-				);
+				html.push(`<ul class="my-2 space-y-2">${listItems.join("")}</ul>`);
 				listItems = [];
 			};
 
@@ -415,19 +418,26 @@
 
 				const bullet = line.match(/^[-*]\s+(.*)$/);
 				if (bullet) {
-					listItems.push(`<li>${inline(bullet[1])}</li>`);
+					listItems.push(
+						'<li class="flex gap-2.5">' +
+							'<span class="text-teal-400 leading-6 select-none">•</span>' +
+							`<span class="flex-1 leading-6">${inline(bullet[1])}</span>` +
+							"</li>",
+					);
 					continue;
 				}
 
 				const heading = line.match(/^#{1,6}\s+(.*)$/);
 				if (heading) {
 					flushList();
-					html.push(`<p class="font-bold mt-2">${inline(heading[1])}</p>`);
+					html.push(
+						`<p class="font-semibold text-teal-300 mt-3 mb-1">${inline(heading[1])}</p>`,
+					);
 					continue;
 				}
 
 				flushList();
-				html.push(`<p class="my-1">${inline(line)}</p>`);
+				html.push(`<p class="my-1.5 leading-6">${inline(line)}</p>`);
 			}
 
 			flushList();
