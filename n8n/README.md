@@ -100,12 +100,24 @@ PORTFOLIO_CHAT_MAX_REQUESTS_PER_HOUR=20
 
 ## Updating the profile
 
-Edit `AGENTS.md`, then rebuild and redeploy — Dokploy's raw compose has no build
-context, so it consumes the image tag:
+The source of truth is `agent/portfolio-facts.json`. `AGENTS.md` is generated
+from it and must never be edited by hand.
 
 ```bash
-docker build -t portfolio-agent:1 .
+cd agent
+# edit portfolio-facts.json
+node scripts/generate-agents.mjs
+node scripts/validate-agents.mjs
+git commit -am "feat(agent): ..." && git push
 ```
+
+Pushing to `main` with changes under `agent/` triggers
+`.github/workflows/deploy-agent.yml`, which regenerates `AGENTS.md`, fails the
+build if the committed copy is stale, then connects to the VPS over a
+restricted SSH key. That key is pinned to a forced command
+(`~/bin/deploy-portfolio-agent.sh`) and can do nothing else: it pulls the
+repository, rebuilds `portfolio-agent:1`, recreates the Dokploy compose
+service, and waits for the healthcheck before reporting success.
 
 ## Request and response
 

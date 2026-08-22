@@ -1,0 +1,53 @@
+name: Deploy portfolio agent
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent/**'
+      - '.github/workflows/deploy-agent.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-agent
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Regenerate AGENTS.md
+        working-directory: agent
+        run: node scripts/generate-agents.mjs
+      - name: Fail if AGENTS.md was not committed up to date
+        run: |
+          if ! git diff --quiet -- agent/AGENTS.md; then
+            echo "::error::agent/AGENTS.md is out of sync with portfolio-facts.json."
+            echo "Run 'node scripts/generate-agents.mjs' inside agent/ and commit the result."
+            git --no-pager diff -- agent/AGENTS.md
+            exit 1
+          fi
+      - name: Validate
+        working-directory: agent
+        run: node scripts/validate-agents.mjs
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over restricted SSH key
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes "$SSH_USER@$SSH_HOST"
