@@ -1,336 +1,188 @@
 /**
- * Portfolio Optimization v2.0
- * Optimizado para máximo rendimiento en dispositivos móviles y desktop
+ * Portfolio behaviour: mobile nav, section highlighting, the "filling in the
+ * form" entrance, validation stamps, and the AI assistant chat.
  */
-
 (() => {
-	// ============================================
-	// CONFIGURACIÓN CENTRALIZADA
-	// ============================================
-	const CONFIG = {
-		particles: {
-			count: 35, // Reducido de 50 a 35 para mejor rendimiento
-			minSize: 1,
-			maxSize: 4,
-			minDuration: 8,
-			maxDuration: 13,
-			maxDelay: 5,
-		},
-		orbit: {
-			speed: 0.005,
-			bobbingIntensity: 10,
-			bobbingSpeed: 2,
-			iconPadding: 30,
-		},
-		resize: {
-			debounceDelay: 150,
-		},
-	};
+	"use strict";
+
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 	// ============================================
-	// MÓDULO DE PARTÍCULAS
+	// NAVIGATION
 	// ============================================
-	const ParticleSystem = {
+	const Navigation = {
 		init() {
-			const container = document.getElementById("particle-container");
-			if (!container) return;
+			this.nav = document.getElementById("nav");
+			this.toggle = document.querySelector("[data-menu]");
+			if (!this.nav || !this.toggle) return;
 
-			const fragment = document.createDocumentFragment();
-
-			for (let i = 0; i < CONFIG.particles.count; i++) {
-				const particle = this.createParticle();
-				fragment.appendChild(particle);
-			}
-
-			// Una sola manipulación del DOM
-			container.appendChild(fragment);
-		},
-
-		createParticle() {
-			const particle = document.createElement("div");
-			particle.className = "particle";
-
-			const size =
-				Math.random() * (CONFIG.particles.maxSize - CONFIG.particles.minSize) +
-				CONFIG.particles.minSize;
-			const duration =
-				Math.random() *
-					(CONFIG.particles.maxDuration - CONFIG.particles.minDuration) +
-				CONFIG.particles.minDuration;
-			const delay = Math.random() * CONFIG.particles.maxDelay;
-			const left = Math.random() * 100;
-
-			particle.style.cssText = `
-                width: ${size}px;
-                height: ${size}px;
-                left: ${left}%;
-                animation-duration: ${duration}s;
-                animation-delay: ${delay}s;
-            `;
-
-			return particle;
-		},
-	};
-
-	// ============================================
-	// MÓDULO DE ÓRBITA
-	// ============================================
-	const OrbitSystem = {
-		container: null,
-		icons: null,
-		iconCount: 0,
-		angleStep: 0,
-		angle: 0,
-		radiusX: 0,
-		radiusY: 0,
-		animationId: null,
-		isPaused: false,
-		_boundAnimate: null,
-
-		init() {
-			this.container = document.getElementById("orbit-container");
-			const nodeList = document.querySelectorAll(".tech-icon");
-
-			if (!this.container || nodeList.length === 0) return;
-
-			// Convertir NodeList a Array para iteración más rápida
-			this.icons = Array.from(nodeList);
-			this.iconCount = this.icons.length;
-			this.angleStep = (2 * Math.PI) / this.iconCount;
-
-			// Pre-bind para evitar crear funciones nuevas en cada frame
-			this._boundAnimate = this.animate.bind(this);
-
-			this.calculateDimensions();
-			this.setupResizeHandler();
-			this.setupHoverPause();
-			this.startAnimation();
-		},
-
-		calculateDimensions() {
-			const rect = this.container.getBoundingClientRect();
-			this.radiusX = rect.width / 2 - CONFIG.orbit.iconPadding;
-			this.radiusY = rect.height / 2 - CONFIG.orbit.iconPadding;
-		},
-
-		setupResizeHandler() {
-			let resizeTimeout;
-			const debouncedResize = () => {
-				clearTimeout(resizeTimeout);
-				resizeTimeout = setTimeout(() => {
-					this.calculateDimensions();
-				}, CONFIG.resize.debounceDelay);
-			};
-
-			window.addEventListener("resize", debouncedResize, { passive: true });
-		},
-
-		setupHoverPause() {
-			this.icons.forEach((icon) => {
-				icon.addEventListener("mouseenter", () => {
-					this.isPaused = true;
-				});
-				icon.addEventListener("mouseleave", () => {
-					this.isPaused = false;
-				});
+			this.toggle.addEventListener("click", () => this.setOpen(!this.isOpen()));
+			this.nav.addEventListener("click", (event) => {
+				if (event.target.closest("a")) this.setOpen(false);
 			});
-		},
-
-		animate() {
-			if (!this.isPaused) {
-				this.angle += CONFIG.orbit.speed;
-			}
-
-			const { angle, angleStep, radiusX, radiusY, icons } = this;
-			const { bobbingSpeed, bobbingIntensity } = CONFIG.orbit;
-
-			for (let i = 0; i < icons.length; i++) {
-				const iconAngle = angle + i * angleStep;
-				const x = radiusX * Math.cos(iconAngle);
-				const y = radiusY * Math.sin(iconAngle);
-				const bobbing = Math.sin(angle * bobbingSpeed + i) * bobbingIntensity;
-
-				icons[i].style.transform = `translate3d(${x}px, ${y + bobbing}px, 0)`;
-			}
-
-			this.animationId = requestAnimationFrame(this._boundAnimate);
-		},
-
-		startAnimation() {
-			if (this.animationId) {
-				cancelAnimationFrame(this.animationId);
-			}
-			this.animate();
-		},
-	};
-
-	// ============================================
-	// MÓDULO DE NAVEGACIÓN CON TRANSICIONES SUAVES
-	// ============================================
-	const NavigationSystem = {
-		navContainer: null,
-		contentSections: null,
-		activeSection: null,
-		activeButton: null,
-		isTransitioning: false,
-
-		init() {
-			const navButtons = document.querySelectorAll(".nav-btn");
-			if (navButtons.length === 0) return;
-
-			this.navContainer =
-				navButtons[0].closest("nav") || navButtons[0].parentElement;
-			this.contentSections = document.querySelectorAll(".content-section");
-
-			// Encontrar la sección activa inicial
-			this.activeSection = document.querySelector(
-				".content-section:not(.hidden)",
-			);
-			this.activeButton = document.querySelector(".nav-btn.active");
-
-			// Inicializar la primera sección como activa
-			if (this.activeSection) {
-				this.activeSection.classList.add("active");
-				this.activeSection.classList.remove("hidden");
-			}
-
-			this.setupEventDelegation();
-			this.initializeButtonStates(navButtons);
-		},
-
-		setupEventDelegation() {
-			this.navContainer.addEventListener("click", (e) => {
-				const button = e.target.closest(".nav-btn");
-
-				if (!button || button === this.activeButton || this.isTransitioning)
-					return;
-
-				this.handleNavigation(button);
-			});
-		},
-
-		initializeButtonStates(buttons) {
-			buttons.forEach((btn) => {
-				if (!btn.classList.contains("active")) {
-					btn.classList.add("nav-btn-inactive");
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape" && this.isOpen()) {
+					this.setOpen(false);
+					this.toggle.focus();
 				}
 			});
+
+			this.trackSections();
 		},
 
-		handleNavigation(clickedButton) {
-			// Prevenir múltiples clics durante la transición
-			this.isTransitioning = true;
+		isOpen() {
+			return this.nav.classList.contains("is-open");
+		},
 
-			// Actualizar botones
-			if (this.activeButton) {
-				this.activeButton.classList.remove("active");
-				this.activeButton.classList.add("nav-btn-inactive");
+		setOpen(open) {
+			this.nav.classList.toggle("is-open", open);
+			this.toggle.setAttribute("aria-expanded", String(open));
+		},
+
+		// Marks the nav link of the section currently crossing the upper third.
+		trackSections() {
+			const links = new Map(
+				[...this.nav.querySelectorAll('a[href^="#"]')].map((link) => [
+					link.getAttribute("href").slice(1),
+					link,
+				]),
+			);
+			const sections = [...links.keys()]
+				.map((id) => document.getElementById(id))
+				.filter(Boolean);
+			if (!sections.length || !("IntersectionObserver" in window)) return;
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (!entry.isIntersecting) continue;
+						for (const link of links.values()) link.removeAttribute("aria-current");
+						links.get(entry.target.id)?.setAttribute("aria-current", "true");
+					}
+				},
+				{ rootMargin: "-30% 0px -65% 0px" },
+			);
+			sections.forEach((section) => observer.observe(section));
+		},
+	};
+
+	// ============================================
+	// SIGNATURE MOTION: FILL + STAMP
+	// ============================================
+	const FormMotion = {
+		init() {
+			const head = document.querySelector(".doc-head");
+			if (head) {
+				head.querySelectorAll(".fill").forEach((el, index) => {
+					el.style.setProperty("--i", String(index));
+				});
+				// Two frames so the clipped start state is painted before transitioning.
+				requestAnimationFrame(() =>
+					requestAnimationFrame(() => head.classList.add("is-filled")),
+				);
 			}
 
-			clickedButton.classList.remove("nav-btn-inactive");
-			clickedButton.classList.add("active");
-			this.activeButton = clickedButton;
+			const stamps = document.querySelectorAll("[data-stamp]");
+			if (!stamps.length) return;
 
-			// Cambiar contenido con animación
-			const targetId = clickedButton.dataset.target;
-			this.switchContentWithAnimation(targetId);
-		},
-
-		switchContentWithAnimation(targetId) {
-			const newSection = document.getElementById(targetId);
-
-			if (!newSection || newSection === this.activeSection) {
-				this.isTransitioning = false;
+			if (!("IntersectionObserver" in window)) {
+				stamps.forEach((stamp) => stamp.classList.add("is-stamped"));
 				return;
 			}
 
-			// Paso 1: Hacer fade-out de la sección actual
-			if (this.activeSection) {
-				this.activeSection.classList.add("fade-out");
-			}
+			const observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (!entry.isIntersecting) continue;
+						entry.target.classList.add("is-stamped");
+						observer.unobserve(entry.target);
+					}
+				},
+				{ rootMargin: "0px 0px -12% 0px", threshold: 1 },
+			);
+			stamps.forEach((stamp) => observer.observe(stamp));
 
-			// Paso 2: Después de 250ms, ocultar la sección anterior y mostrar la nueva
-			setTimeout(() => {
-				// Ocultar sección anterior
-				if (this.activeSection) {
-					this.activeSection.classList.remove("active", "fade-out");
-					this.activeSection.classList.add("hidden");
-				}
-
-				// Mostrar nueva sección
-				newSection.classList.remove("hidden");
-
-				// Trigger de reflow para que la animación funcione
-				void newSection.offsetHeight;
-
-				// Activar animación de entrada
-				newSection.classList.add("active");
-
-				this.activeSection = newSection;
-
-				// Scroll suave hacia la nueva sección (solo si está fuera de vista)
-				const rect = newSection.getBoundingClientRect();
-				if (rect.top < 0 || rect.bottom > window.innerHeight) {
-					newSection.scrollIntoView({
-						behavior: "smooth",
-						block: "start",
-					});
-				}
-
-				// Permitir nuevas transiciones después de completar
-				setTimeout(() => {
-					this.isTransitioning = false;
-				}, 400);
-			}, 250);
+			// Never leave a stamp invisible if the observer misses it (print, odd zoom).
+			window.addEventListener("beforeprint", () =>
+				stamps.forEach((stamp) => stamp.classList.add("is-stamped")),
+			);
 		},
 	};
 
 	// ============================================
-	// MÓDULO DE CHAT IA DEL PORTAFOLIO
+	// AI ASSISTANT CHAT
 	// ============================================
 	const ChatAssistant = {
 		webhookUrl: "https://n8n.arkanis.site/webhook/portfolio-chat",
 		isSending: false,
+		lastTrigger: null,
 
 		// Identifies this tab so the assistant can follow up on earlier turns.
 		// sessionStorage, not localStorage: the conversation ends with the tab.
 		getChatId() {
 			const key = "portfolio-chat-id";
-			let chatId = sessionStorage.getItem(key);
-			if (!chatId) {
-				chatId =
-					typeof crypto !== "undefined" && crypto.randomUUID
-						? crypto.randomUUID()
-						: `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-				sessionStorage.setItem(key, chatId);
+			try {
+				let chatId = sessionStorage.getItem(key);
+				if (!chatId) {
+					chatId = this.newId();
+					sessionStorage.setItem(key, chatId);
+				}
+				return chatId;
+			} catch {
+				this.fallbackId ??= this.newId();
+				return this.fallbackId;
 			}
-			return chatId;
+		},
+
+		newId() {
+			return typeof crypto !== "undefined" && crypto.randomUUID
+				? crypto.randomUUID()
+				: `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 		},
 
 		init() {
-			this.toggle = document.getElementById("ai-chat-toggle");
-			this.panel = document.getElementById("ai-chat-panel");
-			this.form = document.getElementById("ai-chat-form");
-			this.input = document.getElementById("ai-chat-input");
-			this.messages = document.getElementById("ai-chat-messages");
+			this.panel = document.getElementById("chat");
+			this.form = document.getElementById("chat-form");
+			this.input = document.getElementById("chat-input");
+			this.log = document.getElementById("chat-log");
+			this.suggest = document.getElementById("chat-suggest");
+			this.send = this.form?.querySelector(".chat__send");
+			this.fab = document.querySelector(".chat-fab");
+			if (!this.panel || !this.form || !this.input || !this.log) return;
 
-			if (
-				!this.toggle ||
-				!this.panel ||
-				!this.form ||
-				!this.input ||
-				!this.messages
-			)
-				return;
+			document.querySelectorAll("[data-chat-open]").forEach((button) => {
+				button.addEventListener("click", () => this.open(button));
+			});
+			this.panel
+				.querySelector("[data-chat-close]")
+				?.addEventListener("click", () => this.close());
 
-			this.toggle.addEventListener("click", () => {
-				this.panel.classList.toggle("hidden");
-				if (!this.panel.classList.contains("hidden")) {
-					this.input.focus();
-				}
+			document.addEventListener("keydown", (event) => {
+				if (event.key === "Escape" && !this.panel.hidden) this.close();
+			});
+
+			this.suggest?.addEventListener("click", (event) => {
+				const chip = event.target.closest(".chip-btn");
+				if (!chip) return;
+				this.input.value = chip.textContent.trim();
+				this.form.requestSubmit();
 			});
 
 			this.form.addEventListener("submit", (event) => this.handleSubmit(event));
+		},
+
+		open(trigger) {
+			this.lastTrigger = trigger;
+			this.panel.hidden = false;
+			this.fab?.setAttribute("aria-expanded", "true");
+			// Focus after the panel becomes visible so the transition is not cut.
+			setTimeout(() => this.input.focus({ preventScroll: true }), reduceMotion ? 0 : 60);
+		},
+
+		close() {
+			this.panel.hidden = true;
+			this.fab?.setAttribute("aria-expanded", "false");
+			(this.lastTrigger?.isConnected ? this.lastTrigger : this.fab)?.focus({ preventScroll: true });
 		},
 
 		async handleSubmit(event) {
@@ -341,12 +193,12 @@
 			if (!message) return;
 
 			this.input.value = "";
+			if (this.suggest) this.suggest.hidden = true;
 			this.addMessage(message, "user");
-			const loadingMessage = this.addMessage("Pensando...", "assistant");
-			this.isSending = true;
+			const pending = this.addMessage("Escribiendo", "pending");
+			this.setSending(true);
 
-			// Without a deadline a stalled request leaves the bubble on "Pensando..."
-			// forever: neither branch below runs while the promise stays pending.
+			// Without a deadline a stalled request leaves the reply pending forever.
 			const controller = new AbortController();
 			const timeoutId = setTimeout(() => controller.abort(), 60000);
 
@@ -361,20 +213,39 @@
 				});
 
 				const data = await response.json().catch(() => ({}));
-				this.setMessage(
-					loadingMessage,
-					data.answer || "No pude responder en este momento. Intentá de nuevo.",
-				);
+				if (data.answer) {
+					this.resolve(pending, data.answer);
+				} else {
+					this.fail(pending, "No pude responder en este momento. Intenta de nuevo o escríbeme por WhatsApp.");
+				}
 			} catch (error) {
-				loadingMessage.textContent =
+				this.fail(
+					pending,
 					error.name === "AbortError"
-						? "La respuesta está tardando más de lo normal. Probá de nuevo en un momento."
-						: "No pude conectar con el asistente. Intentá de nuevo en un momento.";
+						? "La respuesta está tardando más de lo normal. Prueba de nuevo en un momento."
+						: "No pude conectar con el asistente. Revisa tu conexión e intenta de nuevo.",
+				);
 			} finally {
 				clearTimeout(timeoutId);
-				this.isSending = false;
+				this.setSending(false);
 				this.scrollToBottom();
 			}
+		},
+
+		setSending(sending) {
+			this.isSending = sending;
+			if (this.send) this.send.disabled = sending;
+		},
+
+		resolve(bubble, text) {
+			bubble.className = "msg msg--bot";
+			bubble.innerHTML = this.renderMarkdown(text);
+			this.scrollToBottom();
+		},
+
+		fail(bubble, text) {
+			bubble.className = "msg msg--bot msg--error";
+			bubble.replaceChildren(Object.assign(document.createElement("p"), { textContent: text }));
 		},
 
 		// The assistant replies in Markdown. Escaping runs first and the tags are
@@ -390,36 +261,29 @@
 
 			const inline = (line) =>
 				escape(line)
-					.replace(/`([^`]+)`/g, '<code class="px-1 rounded bg-black/30 text-teal-300">$1</code>')
-					.replace(
-						/\*\*([^*]+)\*\*/g,
-						'<strong class="font-semibold text-teal-300">$1</strong>',
-					)
+					.replace(/`([^`]+)`/g, "<code>$1</code>")
+					.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
 					.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
 					.replace(
 						/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-						'<a href="$2" target="_blank" rel="noopener noreferrer" class="text-teal-300 underline">$1</a>',
+						'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
 					)
 					// Bare URLs, skipping the ones already turned into anchors above.
 					.replace(
 						/(^|[\s(])(https?:\/\/[^\s<)]+)/g,
-						'$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-teal-300 underline">$2</a>',
+						'$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>',
 					);
 
 			const html = [];
 			let listItems = [];
-
-			// Custom markers instead of list-disc: a teal dot aligned to the first
-			// line reads better than a grey bullet against the dark bubble.
 			const flushList = () => {
 				if (!listItems.length) return;
-				html.push(`<ul class="my-2 space-y-2">${listItems.join("")}</ul>`);
+				html.push(`<ul>${listItems.join("")}</ul>`);
 				listItems = [];
 			};
 
 			for (const rawLine of String(text).split("\n")) {
 				const line = rawLine.trim();
-
 				if (!line) {
 					flushList();
 					continue;
@@ -427,82 +291,44 @@
 
 				const bullet = line.match(/^[-*]\s+(.*)$/);
 				if (bullet) {
-					listItems.push(
-						'<li class="flex gap-2.5">' +
-							'<span class="text-teal-400 leading-6 select-none">•</span>' +
-							`<span class="flex-1 leading-6">${inline(bullet[1])}</span>` +
-							"</li>",
-					);
-					continue;
-				}
-
-				const heading = line.match(/^#{1,6}\s+(.*)$/);
-				if (heading) {
-					flushList();
-					html.push(
-						`<p class="font-semibold text-teal-300 mt-3 mb-1">${inline(heading[1])}</p>`,
-					);
+					listItems.push(`<li>${inline(bullet[1])}</li>`);
 					continue;
 				}
 
 				flushList();
-				html.push(`<p class="my-1.5 leading-6">${inline(line)}</p>`);
+				const heading = line.match(/^#{1,6}\s+(.*)$/);
+				html.push(heading ? `<p><strong>${inline(heading[1])}</strong></p>` : `<p>${inline(line)}</p>`);
 			}
 
 			flushList();
 			return html.join("");
 		},
 
-		addMessage(text, sender) {
+		addMessage(text, kind) {
 			const bubble = document.createElement("div");
-			bubble.className =
-				sender === "user"
-					? "p-3 rounded-xl bg-teal-500 text-gray-900 ml-8"
-					: "p-3 rounded-xl bg-white/10 text-gray-200 mr-8 leading-relaxed";
-
-			if (sender === "user") {
-				bubble.textContent = text;
-			} else {
-				bubble.innerHTML = this.renderMarkdown(text);
-			}
-
-			this.messages.appendChild(bubble);
+			bubble.className = `msg msg--${kind === "user" ? "user" : kind === "pending" ? "bot msg--pending" : "bot"}`;
+			const paragraph = document.createElement("p");
+			paragraph.textContent = text;
+			bubble.appendChild(paragraph);
+			this.log.appendChild(bubble);
 			this.scrollToBottom();
 			return bubble;
 		},
 
-		setMessage(bubble, text) {
-			bubble.innerHTML = this.renderMarkdown(text);
-			this.scrollToBottom();
-		},
-
 		scrollToBottom() {
-			this.messages.scrollTop = this.messages.scrollHeight;
+			this.log.scrollTop = this.log.scrollHeight;
 		},
 	};
 
-	// ============================================
-	// INICIALIZACIÓN PRINCIPAL
-	// ============================================
-	function initializePortfolio() {
-		ParticleSystem.init();
-		OrbitSystem.init();
-		NavigationSystem.init();
+	function init() {
+		Navigation.init();
+		FormMotion.init();
 		ChatAssistant.init();
-
-		// Auto-scroll al contenido al cargar la página
-		setTimeout(() => {
-			const contentContainer = document.getElementById("content-container");
-			if (contentContainer) {
-				contentContainer.scrollIntoView({ behavior: "smooth", block: "start" });
-			}
-		}, 500);
 	}
 
-	// Esperar a que el DOM esté listo
 	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", initializePortfolio);
+		document.addEventListener("DOMContentLoaded", init);
 	} else {
-		initializePortfolio();
+		init();
 	}
 })();

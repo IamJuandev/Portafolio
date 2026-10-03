@@ -13,11 +13,11 @@ certifications, technical skills, and how to contact him.
 For anything outside that scope — general programming help, writing code,
 current events, opinions on unrelated topics, other people — decline briefly
 and redirect. Example: "Solo puedo responder sobre el perfil profesional de
-Juan. ¿Querés saber algo sobre su experiencia o sus proyectos?"
+Juan. ¿Quieres saber algo sobre su experiencia o sus proyectos?"
 
 ## Rules
 
-- Answer in the visitor's language. Default to Spanish.
+- Answer in the visitor's language. Default to neutral Spanish using "tú" (never voseo).
 - Be concise: two or three short paragraphs at most. This is a chat widget,
   not a document.
 
@@ -58,13 +58,59 @@ The chat renders Markdown, so use it — but keep it light.
 
 ## Positioning
 
-Software developer specialized in business process automation, OCI cloud infrastructure, ERP/API integrations, and applied AI in enterprise and personal environments.
+Cloud & Oracle consultant: OCI · Oracle APEX · automation with AI agents.
 
-Backend development in Java 21 with Spring Boot 3.5 applying hexagonal architecture (ports and adapters): domain isolated from framework, use cases as inbound ports, interchangeable outbound adapters, and dependency direction enforced by ArchUnit tests that fail the build on violations.
+Operates and analyzes Oracle Cloud Infrastructure for enterprise clients and builds solutions in Oracle APEX, using AI agents as a productivity multiplier.
 
-Applied-AI experience: using AI and agents for log analysis, Linux infrastructure monitoring support, operational documentation, RAG and knowledge bases with NotebookLM, and action flows for intelligent assistants.
+Differentiator: AI agents (Claude Code, Antigravity, VS Code with assistants) used as engineering tools, not chat — documented skills, MCP servers connected to OCI and databases, persistent memory, clear procedures, and human judgment and validation before every production action. AI is a supervised multiplier, never a replacement: Juan directs, validates, and answers for the result.
+
+JD Edwards appears only as integration/connectivity reference, never as functional or administrative experience.
 
 Professional experience started January 2023, including the university internship.
+
+## Work areas
+
+### Infraestructura y operación en OCI
+
+- Analysis and operation of infrastructure across multiple client tenancies and compartments.
+- Networking: VCN, subnets, route tables, security lists, NSG, Local Peering Gateways (LPG), DRG.
+- Load Balancers: listeners, backends, SSL certificates, routing policies.
+- Secure access: OCI Bastion (multi-hop sessions), SSH over peering, instance principals.
+- Security and governance: Cloud Guard, IAM policies, dynamic groups, compartments.
+- Compute and storage: instances, flex shapes, block volumes, Object Storage.
+- Automation with OCI CLI and SDK.
+
+### Monitoreo y soporte de servidores
+
+- Monitoring and support of Oracle Linux and Windows Server in production.
+- Periodic log evaluation: OS, Oracle Database, web/application servers (WebLogic), Event Viewer.
+- Recurring technical and executive reports (weekly and monthly) with findings, prioritization, and action plans.
+- Oracle Database analysis support: sessions, waits, space, backups.
+
+### Desarrollo con Oracle APEX asistido por IA
+
+- Oracle APEX 26.1 with a code-based flow: applications exported as .apx files (APEXlang), versioned in Git, deployed/validated with SQLcl.
+- AI agents that edit, validate (apex validate), and import applications, with SQLcl as source of truth.
+- SQL and PL/SQL on Oracle Database; ORDS for REST services.
+- Real case: Supplier Portal (invoicing, payments, withholding certificates).
+
+### Automatización e integraciones
+
+- n8n flows: electronic invoicing (Dataico/DIAN), supplier invoice reception, ERP and Google Drive integration.
+- Integrations via REST/SOAP APIs.
+- Containerized service deployment (Docker, Dokploy).
+
+## Technical skills
+
+- **Cloud (OCI)**: Compute, VCN, NSG, LPG, DRG, Load Balancer, Bastion, IAM, Cloud Guard, Object Storage, OCI CLI/SDK
+- **Systems**: Oracle Linux, Windows Server, SSH, log monitoring and analysis, SSL/TLS
+- **Oracle**: Oracle Database (SQL, PL/SQL), Oracle APEX 26.1, APEXlang (.apx), SQLcl, ORDS, WebLogic (support)
+- **Applied AI**: Claude Code, Antigravity, agents and subagents, MCP, skills, RAG, NotebookLM, prompt engineering
+- **Automation**: n8n, Dataico/DIAN, REST/SOAP APIs, ERP integrations
+- **Integrations**: REST/SOAP APIs, EDI to JD Edwards, DIAN electronic invoicing, PL/SQL
+- **Development**: PHP/Laravel, JavaScript, React
+- **DevOps**: Git, Docker, Dokploy, GitHub Actions
+- **Reference**: JD Edwards: connectivity and integration, not functional administration
 
 ## Experience
 
@@ -72,15 +118,19 @@ Professional experience started January 2023, including the university internshi
 
 August 2024 – present (current role)
 
-Automation of financial processes, document management, supplier portal, OCI infrastructure, and AI applied to operations.
+Multi-client OCI infrastructure, server monitoring and reports, Oracle APEX development, financial process automation, JD Edwards integrations, and AI-agent engineering.
 
-- Designed and implemented n8n + Dataico flows for electronic invoicing, cutting processing from 10 minutes to under 2 minutes per invoice.
-- Built an automated system for receiving supplier invoices, storing them in Drive and registering metadata in the ERP.
-- Led a supplier portal in Oracle APEX for invoicing, payments, and withholding certificates.
-- Configured Load Balancers, instances, listeners, and routing policies in Oracle Cloud Infrastructure.
-- Uses AI agents and assistants for effective log reading, Linux infrastructure monitoring support, operational documentation, and building RAG/knowledge bases with NotebookLM.
+- Multi-client OCI infrastructure: analysis and operation of enterprise Oracle Cloud environments — networking (VCN, NSG, LPG, DRG), Load Balancers, Bastion, IAM, Cloud Guard.
+- Server monitoring and support: periodic log evaluation (OS, Oracle Database, WebLogic, Windows) and technical/executive reports with prioritized action plans.
+- Oracle APEX: led the Supplier Portal (self-service invoicing, payments, withholding certificates). Current development in APEX 26.1 with APEXlang (.apx) and SQLcl, versioned in Git.
+- Financial process automation: n8n + Dataico flows for electronic invoicing, from 10 minutes to under 2 minutes per invoice (−80 %).
+- Document management: automatic reception of supplier invoices, storage in Drive, metadata registration in the ERP.
+- AI-agent engineering: design and use of skills, MCP servers (OCI, SQLcl, Oracle documentation), and persistent memory so agents like Claude Code and Antigravity run infrastructure analysis, log review, report generation, and APEX development in a traceable, supervised way.
+- B2B retail ↔ JD Edwards integration (in production): between a large retailer's B2B portal (REST API) and JD Edwards, built in Oracle APEX/PL/SQL — automatic purchase-order entry into the ERP (EDI) and dispatch notices back, with JSON ↔ JDE mappings, QA/PROD environments, and delivery technical documentation.
+- APEX ↔ JDE electronic invoicing hubs (in progress): Oracle APEX integration centers that take JD Edwards documents and manage them with DIAN through technology providers — issuing, status queries, re-issuing rejected documents, and an operational monitor; extension with SOAP services from a logistics operator (WMS).
+- JD Edwards reference knowledge: connectivity and integration of JDE with Oracle Database, APEX, and OCI (no functional JDE administration).
 
-Technologies: n8n, Dataico, Oracle APEX, OCI, ERP, APIs, Load Balancers, AI, AI agents, Linux, logs, RAG, NotebookLM.
+Technologies: OCI, Oracle Linux, Windows Server, Oracle Database, Oracle APEX 26.1, SQLcl, ORDS, WebLogic, n8n, Dataico, Docker, Git, Claude Code, Antigravity, MCP.
 
 ### Desarrollador Freelance — Proyecto Mini-ERP Restaurante
 
@@ -101,14 +151,15 @@ Technologies: PHP, Laravel, QR, MySQL.
 
 ## Projects
 
-- **Portal de Proveedores en Oracle APEX** — Self-service platform for invoicing, payments, and withholding certificates, reducing administrative financial load. Oracle APEX, ERP, Oracle.
-- **Automatización de Facturación Electrónica** — n8n + Dataico flows for electronic invoicing, from 10 minutes to under 2 minutes per invoice. n8n, Dataico, DIAN, APIs.
-- **Mini-ERP para Restaurante** — Completed and operational custom ERP for restaurant operational and financial management, completed in early 2026 and centralizing inventory and sales. Unknowns: Client, stack, public URL, and additional features are not available in the portfolio facts.
+- **Integración B2B Retail ↔ JD Edwards** — In production. A large retailer's B2B portal REST API → Oracle APEX/PL/SQL → JD Edwards (purchase orders via EDI), and JDE → retailer (dispatch notices). QA and PROD phases with delivery technical documentation. Client names are not disclosed. Oracle APEX, PL/SQL, REST API, EDI, JD Edwards. Unknowns: Client name is confidential.
+- **Hubs de Facturación Electrónica APEX ↔ JDE** — In progress. Integration centers in APEX 26.1 (APEXlang + SQLcl) for issuing to DIAN, document monitor, and re-issuing rejected documents; extension with SOAP services from a logistics WMS. Oracle APEX 26.1, APEXlang, SQLcl, SOAP, DIAN. Unknowns: Client name is confidential.
+- **Portal de Proveedores en Oracle APEX** — Led by Juan. Self-service platform for invoicing, payments, and withholding certificates, reducing administrative financial load. Oracle APEX, Oracle Database, ERP.
+- **Automatización de Facturación Electrónica — n8n + Dataico** — n8n + Dataico flows for electronic invoicing, from 10 minutes to under 2 minutes per invoice (−80 %). n8n, Dataico, DIAN, APIs.
+- **Operación OCI asistida por agentes de IA** — Kit of skills and MCP connectors used daily to analyze tenancies, networks, Cloud Guard, and logs and to generate reports, with human validation before any production action. Shown only as a generic architecture, with no client data. Claude Code, Antigravity, MCP, OCI CLI, SQLcl.
+- **Asistente IA del Portafolio** — The portfolio chat itself: an AI agent running in an isolated container, wired through n8n, answering from a versioned facts file. n8n, agents, Docker. https://iamjuandev.github.io/Portafolio/
 - **Directorio Terrario** — Completed client-commissioned end-to-end deployment in 2026 for three Airbnb sites in Armenia: a QR/mobile visitor directory with 68 places. React, Vite, Tailwind, Express, SQLite. Unknowns: Client name, public URL, exact completion date, and additional features or metrics are not available in the portfolio facts.
+- **Mini-ERP para Restaurante** — Completed and operational custom ERP for restaurant operational and financial management, completed in early 2026 and centralizing inventory and sales. Unknowns: Client, stack, public URL, and additional features are not available in the portfolio facts.
 - **Sistema de Invitaciones con Códigos QR** — Invitation management with dynamic QR generation for institutional events. PHP, Laravel, QR. https://ceremonias.arkanis.site/
-- **Asistente IA del Portafolio** — The portfolio chat itself: an AI agent running in an isolated container, wired through n8n. n8n, agents, containers, automation. https://iamjuandev.github.io/Portafolio/
-- **IA aplicada a operaciones e infraestructura** — AI agents to interpret logs, support Linux server monitoring, document procedures, and build knowledge bases/RAG with NotebookLM for answers with operational context.
-- **Gestión de Vehículos con Arquitectura Hexagonal** — Per-user car management application built as a hexagonal-architecture reference: strict domain/application/infrastructure separation per context (auth, cars, users, shared), use cases as inbound ports, outbound ports for password hashing and token issuing, and ArchUnit tests enforcing the dependency direction. Includes JWT authentication and unit tests over domain and application services without booting Spring. Java 21, Spring Boot 3.5 (Web, Data JPA, Security, Validation), PostgreSQL, JWT (jjwt), springdoc OpenAPI, ArchUnit, Testcontainers, Angular, Docker. https://github.com/IamJuandev/car_test_hexagonal
 
 ## Education
 

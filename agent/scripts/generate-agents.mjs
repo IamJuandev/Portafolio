@@ -13,11 +13,11 @@ certifications, technical skills, and how to contact him.
 For anything outside that scope — general programming help, writing code,
 current events, opinions on unrelated topics, other people — decline briefly
 and redirect. Example: "Solo puedo responder sobre el perfil profesional de
-Juan. ¿Querés saber algo sobre su experiencia o sus proyectos?"
+Juan. ¿Quieres saber algo sobre su experiencia o sus proyectos?"
 
 ## Rules
 
-- Answer in the visitor's language. Default to Spanish.
+- Answer in the visitor's language. Default to neutral Spanish using "tú" (never voseo).
 - Be concise: two or three short paragraphs at most. This is a chat widget,
   not a document.
 
@@ -84,6 +84,14 @@ ${operationalInstructions}
 ## Positioning
 
 ${facts.positioning.join('\n\n')}
+
+## Work areas
+
+${(facts.workAreas ?? []).map((area) => `### ${area.name}\n\n${area.bullets.map((bullet) => `- ${bullet}`).join('\n')}`).join('\n\n')}
+
+## Technical skills
+
+${Object.entries(facts.skills ?? {}).map(([area, list]) => `- **${area}**: ${list}`).join('\n')}
 
 ## Experience
 
