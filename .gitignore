@@ -8,3 +8,6 @@ n8n/.env.example
 
 # Local Pi runtime state
 .atl/
+
+# Impeccable dev artifacts (would be served by GitHub Pages)
+.impeccable/

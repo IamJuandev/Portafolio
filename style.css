@@ -187,6 +187,17 @@ strong {
   font-weight: 500;
 }
 
+/* Pre-printed casilla numbers, as on DIAN forms */
+.sheet {
+  counter-reset: casilla;
+}
+.sheet .field__label::before,
+.sheet .box__label::before {
+  counter-increment: casilla;
+  content: counter(casilla) ". ";
+  opacity: 0.75;
+}
+
 .field {
   padding: 10px var(--pad) 12px;
   min-width: 0;
@@ -487,7 +498,7 @@ strong {
   align-self: center;
   width: min(100%, 220px);
   padding: 10px;
-  margin-top: 4px;
+  margin: auto 0;
   background: var(--paper-hi);
   outline: var(--rule-hair);
   transition: transform 200ms var(--ease-out);
@@ -509,9 +520,7 @@ strong {
   text-align: center;
   color: var(--ink-soft);
 }
-.issuer__qr .btn {
-  margin-top: auto;
-}
+
 
 .buyer {
   display: grid;
@@ -679,27 +688,22 @@ strong {
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: job;
-  columns: 2;
-  column-gap: 0;
-  column-rule: var(--rule-hair);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 .job__list li {
-  break-inside: avoid;
-  padding: 14px var(--pad) 16px 52px;
+  padding: 14px var(--pad) 16px;
   position: relative;
   font-size: 15px;
   line-height: 1.55;
   border-bottom: var(--rule-hair);
-  counter-increment: job;
 }
-.job__list li::before {
-  content: counter(job, decimal-leading-zero);
-  position: absolute;
-  left: var(--pad);
-  top: 16px;
-  font: 500 12px/1.4 var(--mono);
-  color: var(--form);
+.job__list li:nth-child(odd) {
+  border-right: var(--rule-hair);
+}
+.job__list li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+  border-right: 0;
 }
 .job__list strong {
   display: block;
@@ -1010,7 +1014,11 @@ strong {
   gap: 0;
   align-content: start;
 }
-.edu__list .box + .box {
+.edu__item {
+  border: var(--rule);
+  padding: 14px var(--pad) 16px;
+}
+.edu__item + .edu__item {
   border-top: 0;
 }
 .edu__list strong {
@@ -1020,7 +1028,7 @@ strong {
   font-size: 18px;
   line-height: 1.2;
 }
-.edu__list span:not(.box__label) {
+.edu__list span {
   display: block;
   margin-top: 4px;
   font-size: 14.5px;
@@ -1139,6 +1147,41 @@ strong {
 }
 .sign__name {
   font-weight: 600;
+}
+
+.totals {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0 var(--gutter) var(--gutter);
+  border: var(--rule-strong);
+}
+.totals .field + .field {
+  border-left: var(--rule-hair);
+}
+.totals .field__value {
+  margin-top: 2px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.totals__live {
+  color: var(--valid);
+}
+@media (max-width: 960px) {
+  .totals {
+    grid-template-columns: 1fr 1fr;
+  }
+  .totals .field + .field {
+    border-left: 0;
+  }
+  .totals .field:nth-child(even) {
+    border-left: var(--rule-hair);
+  }
+  .totals .field:nth-child(n + 3) {
+    border-top: var(--rule-hair);
+  }
+  .totals .field:last-child {
+    grid-column: 1 / -1;
+  }
 }
 
 .foot {
@@ -1362,7 +1405,7 @@ strong {
   caret-color: var(--form);
 }
 .chat__form input::placeholder {
-  color: #59606b;
+  color: var(--form);
 }
 .chat__form input:focus-visible {
   outline: 2px solid var(--form);
@@ -1410,12 +1453,10 @@ strong {
   transition: clip-path 620ms var(--ease-in-out);
   transition-delay: calc(var(--i, 0) * 110ms + 120ms);
 }
-.js [data-stamp] {
-  opacity: 0;
-}
+/* Stamps rest visible; landing only plays the entry, so a missed observer
+   callback leaves a static stamp instead of an empty cell. */
 .js [data-stamp].is-stamped {
-  opacity: 1;
-  animation: stamp 420ms var(--ease-out) both;
+  animation: stamp 420ms var(--ease-out) backwards;
 }
 @keyframes stamp {
   0% {
@@ -1470,7 +1511,10 @@ strong {
     display: none;
   }
   .job__list {
-    columns: 1;
+    grid-template-columns: 1fr;
+  }
+  .job__list li:nth-child(odd) {
+    border-right: 0;
   }
 }
 
@@ -1529,6 +1573,9 @@ strong {
   }
   .line__head {
     border-right: 0;
+  }
+  .line__no {
+    grid-row: span 2;
   }
   .line__detail {
     grid-column: 2;
@@ -1598,9 +1645,7 @@ strong {
     border-left: 0;
     border-top: var(--rule-hair);
   }
-  .job__list li {
-    padding-left: 44px;
-  }
+
   .ptable {
     margin-left: 12px;
     margin-right: 12px;
@@ -1613,6 +1658,13 @@ strong {
   }
   .ptable__row--head + .ptable__row {
     border-top: 0;
+  }
+  .ptable__no {
+    grid-row: span 2;
+    border-right: var(--rule-hair);
+  }
+  .ptable__row > .ptable__main {
+    border-left: 0;
   }
   .ptable__row > :last-child {
     grid-column: 2;

@@ -90,22 +90,51 @@
 				return;
 			}
 
+			// Stamps are visible by default; only the ones below the fold wait to land.
+			const land = (stamp) => {
+				stamp.classList.remove("is-pending");
+				stamp.classList.add("is-stamped");
+			};
 			const observer = new IntersectionObserver(
 				(entries) => {
 					for (const entry of entries) {
 						if (!entry.isIntersecting) continue;
-						entry.target.classList.add("is-stamped");
+						land(entry.target);
 						observer.unobserve(entry.target);
 					}
 				},
-				{ rootMargin: "0px 0px -12% 0px", threshold: 1 },
+				{ rootMargin: "0px 0px -10% 0px", threshold: 0.4 },
 			);
-			stamps.forEach((stamp) => observer.observe(stamp));
+			stamps.forEach((stamp) => {
+				if (stamp.getBoundingClientRect().top < window.innerHeight) return;
+				stamp.classList.add("is-pending");
+				observer.observe(stamp);
+			});
 
-			// Never leave a stamp invisible if the observer misses it (print, odd zoom).
-			window.addEventListener("beforeprint", () =>
-				stamps.forEach((stamp) => stamp.classList.add("is-stamped")),
-			);
+			// Backstop for missed observer callbacks (fast jumps, throttled frames):
+			// any pending stamp at or above the viewport bottom lands on the next frame.
+			let queued = false;
+			const sweep = () => {
+				queued = false;
+				const pending = document.querySelectorAll("[data-stamp].is-pending");
+				if (!pending.length) return window.removeEventListener("scroll", onScroll);
+				pending.forEach((stamp) => {
+					if (stamp.getBoundingClientRect().top < window.innerHeight * 0.92) {
+						observer.unobserve(stamp);
+						land(stamp);
+					}
+				});
+			};
+			const onScroll = () => {
+				if (queued) return;
+				queued = true;
+				requestAnimationFrame(sweep);
+			};
+			window.addEventListener("scroll", onScroll, { passive: true });
+			window.addEventListener("hashchange", () => setTimeout(sweep, 50));
+
+			// Never leave a stamp hidden if the observer misses it (print, odd zoom).
+			window.addEventListener("beforeprint", () => stamps.forEach(land));
 		},
 	};
 
