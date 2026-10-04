@@ -1,0 +1,170 @@
+# Production compose for the portfolio chat agent (Dokploy project
+# portfolio-agent-7tghcl). The deploy script builds portfolio-agent:1 from
+# agent/ and copies this directory into the Dokploy compose dir.
+#
+# Isolation model: `agent` lives only on `agent-internal` (internal: true, no
+# route out). Its only egress is `squid`, which allowlists *.opencode.ai.
+# n8n reaches it only through `gateway`, which exposes a fixed set of paths.
+
+x-hardening: &hardening
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  agent:
+    <<: *hardening
+    image: portfolio-agent:1
+    restart: unless-stopped
+    environment:
+      # Swap the model without rebuilding. Zen free models are beta and
+      # can disappear without notice.
+      - OPENCODE_MODEL=${OPENCODE_MODEL:-opencode/big-pickle}
+      - OPENCODE_SERVER_USERNAME=${OPENCODE_SERVER_USERNAME:-opencode}
+      - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD}
+      # The only way out of agent-internal.
+      - HTTP_PROXY=http://squid:3128
+      - HTTPS_PROXY=http://squid:3128
+      - http_proxy=http://squid:3128
+      - https_proxy=http://squid:3128
+      - NO_PROXY=localhost,127.0.0.1
+      - no_proxy=localhost,127.0.0.1
+    networks:
+      - agent-internal
+    mem_limit: 1g
+    cpus: 0.5
+    # read_only rootfs, so opencode's writable paths come from named volumes.
+    # Docker seeds a fresh named volume from the image, carrying the uid 10001
+    # ownership set in the Dockerfile, which a bare tmpfs does not do.
+    volumes:
+      - agent-v2-state:/workspace/.local
+      - agent-v2-config:/workspace/.config
+      - agent-v2-cache:/workspace/.cache
+    tmpfs:
+      - /tmp
+    depends_on:
+      - squid
+    # The server enforces basic auth, so an unauthenticated probe would always
+    # 401. The slim image has no wget/curl, so node's fetch does the probe.
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          const a=Buffer.from(process.env.OPENCODE_SERVER_USERNAME+':'+process.env.OPENCODE_SERVER_PASSWORD).toString('base64');
+          fetch('http://127.0.0.1:4096/global/health',{headers:{Authorization:'Basic '+a}})
+          .then(r=>process.exit(r.ok?0:1),()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  squid:
+    <<: *hardening
+    image: ubuntu/squid:6.6-24.04_beta
+    restart: unless-stopped
+    networks:
+      - agent-internal
+      - agent-egress
+    volumes:
+      - ./squid/squid.conf:/etc/squid/squid.conf:ro
+    tmpfs:
+      - /run
+      - /tmp
+      - /var/log/squid:uid=13,gid=13,mode=0750
+      - /var/spool/squid
+    # squid starts as root to open its port and then drops to the `proxy`
+    # user: SETUID/SETGID for the switch, CHOWN/DAC_OVERRIDE/FOWNER so the
+    # entrypoint can prepare its tmpfs dirs. No network or admin caps.
+    cap_add:
+      - SETUID
+      - SETGID
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+    mem_limit: 128m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3128"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  gateway:
+    <<: *hardening
+    # Unprivileged variant: runs as uid 101, so no bind caps are needed.
+    image: nginxinc/nginx-unprivileged:1.29-alpine
+    restart: unless-stopped
+    environment:
+      - NGINX_ENTRYPOINT_QUIET_LOGS=1
+    networks:
+      agent-internal:
+      dokploy-network:
+        # n8n keeps calling http://portfolio-agent:4096.
+        aliases:
+          - portfolio-agent
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    tmpfs:
+      - /tmp
+    mem_limit: 64m
+    cpus: 0.25
+    depends_on:
+      - agent
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4096/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  # Session store used by n8n. Same settings as the previous deployment:
+  # in-memory only, no persistence, LRU-capped.
+  redis:
+    <<: *hardening
+    image: redis:7-alpine
+    restart: unless-stopped
+    user: redis
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - 64mb
+      - --maxmemory-policy
+      - allkeys-lru
+    networks:
+      dokploy-network:
+        aliases:
+          - portfolio-redis
+    tmpfs:
+      - /data
+    mem_limit: 96m
+    cpus: 0.2
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  agent-v2-state:
+  agent-v2-config:
+  agent-v2-cache:
+
+networks:
+  # No route out of this network: containers here reach only each other.
+  agent-internal:
+    driver: bridge
+    internal: true
+  # Squid's outbound leg.
+  agent-egress:
+    driver: bridge
+  dokploy-network:
+    external: true
