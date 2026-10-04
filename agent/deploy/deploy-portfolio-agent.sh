@@ -36,7 +36,9 @@ sudo cp -r "$AGENT_DIR/deploy/squid" "$AGENT_DIR/deploy/gateway" "$COMPOSE_DIR/"
 echo "==> Redeploying"
 cd "$COMPOSE_DIR"
 sudo docker compose -p "$COMPOSE_PROJECT" up -d --remove-orphans
-sudo docker compose -p "$COMPOSE_PROJECT" up -d --force-recreate agent
+# The image tag is reused and the squid/nginx configs are bind mounts that
+# were just replaced (new inodes), so recreate the services that consume them.
+sudo docker compose -p "$COMPOSE_PROJECT" up -d --force-recreate agent squid gateway
 
 echo "==> Waiting for health"
 for i in $(seq 1 30); do

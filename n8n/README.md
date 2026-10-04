@@ -9,7 +9,10 @@ Browser (GitHub Pages)
    └─ POST /webhook/portfolio-chat   { message, chatId }
         └─ n8n workflow
              ├─ Redis      chat:<chatId> → { session, turn count }
-             └─ opencode   POST /session/<id>/message
+             └─ gateway (nginx) → opencode v2
+                  POST /api/session/<id>/prompt
+                  POST /api/experimental/session/<id>/wait
+                  GET  /api/session/<id>/message
 ```
 
 ## Why there is no database
@@ -26,25 +29,30 @@ profile is editing Markdown, not running SQL.
 
 ### opencode container
 
-Runs `opencode serve` behind HTTP basic auth. Reachable only from n8n over the
-`dokploy-network` alias `portfolio-agent`; it publishes no ports.
+Runs OpenCode v2 (`@opencode/cli`) `serve` behind HTTP basic auth. n8n never
+reaches it directly: it talks to the `gateway` (nginx) on the `dokploy-network`
+alias `portfolio-agent`, which forwards only the API paths below. Details and
+the full isolation model live in `agent/deploy/README.md`.
 
-The agent holds **no tools**. `bash`, `edit`, `read`, `webfetch`, and `task`
-are set to `deny` in `opencode.json`, so it is a text generator, not an agent
-with a shell. It also carries no credentials: the OpenCode Zen free models
-answer anonymously.
+The OpenCode Zen free tier refuses requests unless the `bash` and `read` tools
+exist, so they stay present but are allowlisted down to nothing useful:
+`bash` may run only `true`, `read` may open only `AGENTS.md`; `grep`, `glob`,
+`list`, `edit`, `webfetch`, `websearch`, `task`, `skill` and `question` are
+denied. Config and cache are tmpfs, so nothing written survives a restart.
 
-The profile lives in `AGENTS.md`, which opencode injects as instructions. It is
-deliberately not a separate file the agent reads, because `read` is denied.
+The agent container sits on an internal Docker network with no route out. Its
+only egress is a squid proxy that allowlists `.opencode.ai`.
+
+The profile lives in `AGENTS.md`, which opencode injects as instructions.
 
 Prompt rules define scope and tone. They are **not** a security boundary — a
 prompt injection can talk the model out of any instruction. Containment comes
-from the container holding nothing worth taking: no tools, no secrets, and a
-profile that is already public.
+from the permissions, the network isolation, and a profile that is already
+public.
 
 ### Redis
 
-One key per visitor, `chat:<chatId>`, holding the opencode session id and the
+One key per visitor, `chat2:<chatId>`, holding the opencode session id and the
 turn count, with a 30 minute sliding TTL.
 
 The frontend generates `chatId` with `crypto.randomUUID()` and keeps it in
@@ -55,7 +63,7 @@ key and no locking is needed.
 
 ### Session janitor
 
-A scheduled workflow runs hourly, lists opencode sessions, and deletes any idle
+A scheduled workflow runs hourly, lists opencode sessions (`GET /api/session`), and deletes any idle
 for more than 30 minutes — the same threshold as the Redis TTL, so it can never
 reclaim a session someone could still resume.
 
@@ -74,9 +82,12 @@ expires, but the opencode session would otherwise remain forever.
 4. **Plan Session** — reuse, or rotate after 20 turns
 5. **Rotate** — delete the old opencode session, create a new one
 6. **Save Chat State** — Redis write with a fresh TTL
-7. **Ask Portfolio Agent** — `POST /session/<id>/message`
-8. **Format** — keeps only `text` parts; `reasoning` parts never reach visitors
-9. **Respond** — JSON with CORS for the portfolio origin
+7. **Ask Portfolio Agent** — `POST /api/session/<id>/prompt`
+8. **Wait For Agent** — `POST /api/experimental/session/<id>/wait` (until idle)
+9. **Get Agent Messages** — `GET /api/session/<id>/message`
+10. **Format** — takes the newest assistant message and keeps only `text`
+    parts; `reasoning` parts never reach visitors
+11. **Respond** — JSON with CORS for the portfolio origin
 
 ## Configuration
 
@@ -111,13 +122,14 @@ node scripts/validate-agents.mjs
 git commit -am "feat(agent): ..." && git push
 ```
 
-Pushing to `main` with changes under `agent/` triggers
+Pushing to `master` with changes under `agent/` triggers
 `.github/workflows/deploy-agent.yml`, which regenerates `AGENTS.md`, fails the
 build if the committed copy is stale, then connects to the VPS over a
 restricted SSH key. That key is pinned to a forced command
 (`~/bin/deploy-portfolio-agent.sh`) and can do nothing else: it pulls the
-repository, rebuilds `portfolio-agent:1`, recreates the Dokploy compose
-service, and waits for the healthcheck before reporting success.
+repository, rebuilds `portfolio-agent:1`, syncs `agent/deploy/` into the
+Dokploy compose directory, recreates the services, waits for the healthcheck
+and runs `agent/deploy/verify.sh` before reporting success.
 
 ## Request and response
 
@@ -128,8 +140,3 @@ service, and waits for the healthcheck before reporting success.
 ```json
 { "answer": "Juan diseñó e implementó flujos con n8n y Dataico..." }
 ```
-
-## Legacy files
-
-`portfolio-chat-openrouter.workflow.json` and `postgres/` belong to the
-PostgreSQL version and are kept only as history. Neither is deployed.
