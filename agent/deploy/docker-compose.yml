@@ -35,15 +35,15 @@ services:
       - agent-internal
     mem_limit: 1g
     cpus: 0.5
-    # read_only rootfs, so opencode's writable paths come from named volumes.
-    # Docker seeds a fresh named volume from the image, carrying the uid 10001
-    # ownership set in the Dockerfile, which a bare tmpfs does not do.
+    # read_only rootfs. Only session state persists (named volume seeded from
+    # the image with uid 10001). Config and cache are tmpfs so nothing written
+    # there can change the agent's behavior across restarts or redeploys.
     volumes:
       - agent-v2-state:/workspace/.local
-      - agent-v2-config:/workspace/.config
-      - agent-v2-cache:/workspace/.cache
     tmpfs:
       - /tmp
+      - /workspace/.config:uid=10001,gid=10001,mode=0700
+      - /workspace/.cache:uid=10001,gid=10001,mode=0700
     depends_on:
       - squid
     # The server enforces basic auth, so an unauthenticated probe would always
@@ -155,8 +155,6 @@ services:
 
 volumes:
   agent-v2-state:
-  agent-v2-config:
-  agent-v2-cache:
 
 networks:
   # No route out of this network: containers here reach only each other.

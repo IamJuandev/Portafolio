@@ -14,8 +14,11 @@ separate dev compose; the image is built from `agent/` (`Dockerfile`).
 
 ## Isolation model
 
-The Zen free tier refuses requests unless the `bash` tool is enabled, so the
-agent is isolated by the network instead of by tool permissions:
+The Zen free tier refuses requests unless the `bash` and `read` tools are
+available. `opencode.json` keeps them present but allows only `bash: true` and
+reading `AGENTS.md`; every other command, path and tool is denied. On top of
+that, the agent is isolated by the network, and its config and cache dirs are
+tmpfs so nothing it writes survives a restart:
 
 - `agent-internal` is `internal: true`: no route to the internet, the VPS,
   OCI metadata (`169.254.169.254`) or other Dokploy services.
