@@ -11,3 +11,6 @@ n8n/.env.example
 
 # Impeccable dev artifacts (would be served by GitHub Pages)
 .impeccable/
+
+# ODD task docs (would be served by GitHub Pages)
+odd/

@@ -12,28 +12,32 @@ delegated: static HTML, hand-written CSS with custom-property tokens, vanilla JS
 
 ## Users
 
-- Inferred (stated to the user, not contradicted): technical recruiters and hiring managers evaluating a Cloud & Oracle consultant profile.
-- Inferred: companies looking for someone to operate OCI infrastructure, build Oracle APEX applications, or integrate ERPs (JD Edwards) and electronic invoicing (DIAN).
+- Inferred (stated to the user, not contradicted): technical recruiters and hiring managers evaluating an OCI consultant profile.
+- Inferred: companies looking for someone to operate OCI infrastructure, integrate Oracle APEX with JD Edwards (and electronic invoicing with DIAN), or build custom systems in Laravel.
 - They arrive from LinkedIn, a CV link, or a direct referral, usually on desktop during work hours, sometimes on a phone. They scan for: what he does, proof it is real, and how to reach him.
 
 ## Product Purpose
 
-Personal portfolio of Juan Gabriel Alfonso Rojas. It must reposition him from "software developer / automation" to **Consultor Cloud & Oracle — OCI · Oracle APEX · Automatización con Agentes de IA**, prove that with real work (integrations in production, supplier portal, invoicing automation), and get the visitor to contact him (WhatsApp, email, LinkedIn) or ask the portfolio's AI assistant.
+Personal portfolio of Juan Gabriel Alfonso Rojas. It must position him as **Consultor OCI · Integración Oracle APEX ↔ JD Edwards · Desarrollo a medida con Laravel**, prove that with real work (OCI operation, integrations in production, supplier portal, invoicing automation, freelance systems), and get the visitor to contact him (WhatsApp, email, LinkedIn) or ask the portfolio's AI assistant.
 
 ## Positioning
 
-He operates enterprise OCI infrastructure and builds Oracle APEX integrations, and his way of working is the differentiator: AI agents (Claude Code, Antigravity) used as engineering tools with documented skills, MCP servers connected to OCI and databases, persistent memory, and human validation before every production action. AI is a supervised multiplier, never a replacement.
+Priority order on the page: (1) OCI consulting, (2) Oracle APEX ↔ JD Edwards integration (direct JDE schemas and the JDE AIS server / Orchestrator, with APEX translating SOAP when Orchestrator cannot), (3) custom Laravel development as a freelancer, (4) Komio, his own restaurant-management SaaS, in development. Consulting (VCE Consulting) and freelance work are shown as separate blocks.
+
+His way of working is the differentiator: AI agents (Claude Code, Antigravity) used as engineering tools with documented skills, MCP servers connected to OCI and databases, persistent memory, and human validation before every production action. AI is a supervised multiplier, never a replacement.
 
 ## Operating Context
 
 - Current role: Consultor Informático / Desarrollador at VCE Consulting (Aug 2024 – present).
-- Work spans multiple client tenancies/compartments, Oracle Linux and Windows Server monitoring, recurring technical/executive reports, APEX 26.1 with APEXlang (`.apx`) + SQLcl versioned in Git, n8n flows, JD Edwards integrations.
+- Work spans multiple client tenancies/compartments, Oracle Linux and Windows Server monitoring, recurring technical/executive reports, APEX 26.1 with APEXlang (`.apx`) + SQLcl versioned in Git, n8n flows, JD Edwards integrations (schemas + AIS / Orchestrator).
+- Freelance: custom Laravel systems (Laravel 13 + Inertia/React, PostgreSQL, Pest); completed Mini-ERP Restaurante and Directorio Terrario.
+- Own product: Komio, multi-tenant restaurant-management SaaS with applied AI, in development. Never describe it as derived from any other company.
 - The site embeds a chat assistant backed by n8n (`https://n8n.arkanis.site/webhook/portfolio-chat`) and an agent that answers from `agent/portfolio-facts.json`.
 
 ## Capabilities and Constraints
 
 - Site language: Spanish, neutral "tú" (no voseo).
-- Section order (from `rediseño.md`): Hero, Sobre mí, Áreas de trabajo (4), Experiencia, Proyectos, Habilidades técnicas, Formación y certificaciones, Contacto.
+- Section order: Hero, Sobre mí, Áreas de trabajo (4: OCI → APEX ↔ JDE → Laravel → automation/AI), Experiencia (A · Consultoría, B · Freelance, C · Experiencia previa), Proyectos, Habilidades técnicas, Formación y certificaciones, Contacto.
 - The chat widget must keep working against the same webhook and request contract.
 - `agent/portfolio-facts.json` must stay in sync with the page content; remove the hexagonal-architecture vehicle project and the Java/Spring positioning paragraph.
 - Fix `logo.cvg` → `logo.svg` and add a favicon.
@@ -44,7 +48,7 @@ He operates enterprise OCI infrastructure and builds Oracle APEX integrations, a
 - Name: Juan Gabriel Alfonso Rojas. Handle: IamJuandev.
 - Existing photo `photo.png` and sticker `STIKER-removebg-preview.png`.
 - No client names, IPs, OCIDs, or real console screenshots. Use "clientes empresariales" and generic diagrams.
-- JD Edwards appears only as integration reference, never as functional/administrative experience.
+- JD Edwards appears only as integration experience, never as functional/administrative experience.
 
 ## Evidence on Hand
 

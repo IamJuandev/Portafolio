@@ -41,6 +41,7 @@
   --form: #2340c8;
   --form-deep: #1a2f96;
   --form-wash: #e4e9f8;
+  --desk: #d6dcf0;
   --ink: #111315;
   --ink-soft: #2b2f34;
   --valid: #0e7a4f;
@@ -74,7 +75,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--form);
+  background: var(--desk);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
@@ -409,9 +410,11 @@ strong {
   max-width: var(--sheet-max);
   margin: 0 auto clamp(24px, 4vw, 56px);
   background: var(--paper);
+  /* The pale desk gives low sheet contrast, so a form-blue edge defines the sheet. */
+  outline: var(--rule);
   box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.16),
-    0 18px 40px -12px rgb(0 0 0 / 0.32);
+    0 1px 2px rgb(26 47 150 / 0.12),
+    0 18px 40px -12px rgb(26 47 150 / 0.24);
 }
 
 /* ---------- Document head ---------- */
@@ -751,6 +754,22 @@ strong {
   gap: var(--gutter);
   margin: 0 var(--gutter) var(--gutter);
 }
+.jobs-minor--single {
+  grid-template-columns: 1fr;
+}
+/* Sub-band that labels an engagement type (Consultoría / Freelance) inside a section */
+.bar--sub {
+  margin: var(--gutter) var(--gutter) 0;
+  background: transparent;
+  color: var(--form);
+  border: var(--rule);
+  border-bottom: 0;
+  padding: 7px var(--pad);
+}
+.bar--sub + .job,
+.bar--sub + .jobs-minor {
+  margin-top: 0;
+}
 .job--minor {
   margin: 0;
 }
@@ -770,7 +789,7 @@ strong {
 }
 .ptable__row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) minmax(150px, 0.34fr) 150px;
+  grid-template-columns: 56px minmax(0, 1fr) minmax(150px, 0.34fr) 172px;
   border-top: var(--rule-hair);
 }
 .ptable__row > * {
@@ -833,6 +852,7 @@ strong {
   color: var(--form);
   padding: 6px 8px;
   border: 1px solid var(--form);
+  white-space: nowrap;
 }
 .status--live {
   color: var(--valid);
@@ -1033,6 +1053,16 @@ strong {
   margin-top: 4px;
   font-size: 14.5px;
   color: var(--ink-soft);
+}
+.edu__list .edu__verify {
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--form);
+}
+.edu__verify a {
+  color: var(--form-deep);
+  text-underline-offset: 2px;
 }
 .certs {
   border: var(--rule);
@@ -1581,8 +1611,45 @@ strong {
     grid-column: 2;
     padding-top: 0;
   }
+  .issuer {
+    grid-template-columns: minmax(0, 1fr) clamp(244px, 33vw, 280px);
+  }
+  .issuer__qr .btn {
+    padding: 0 12px;
+    gap: 8px;
+    white-space: nowrap;
+  }
   .ptable__row {
-    grid-template-columns: 44px minmax(0, 1fr) 140px;
+    grid-template-columns: 44px minmax(0, 1fr) 176px;
+  }
+  /* Four nodes side by side are too narrow below desktop: run lanes vertically. */
+  .flow__lane {
+    flex-direction: column;
+  }
+  .edge {
+    flex-basis: 30px;
+  }
+  .edge::before {
+    left: 50%;
+    right: auto;
+    top: 4px;
+    bottom: 6px;
+    border-top: 0;
+    border-left: 1.5px solid var(--form);
+  }
+  .edge::after {
+    right: auto;
+    left: calc(50% - 4px);
+    top: auto;
+    bottom: 7px;
+    transform: rotate(135deg);
+  }
+  .edge span {
+    top: 0;
+    left: 22px;
+  }
+  .flow__return {
+    justify-content: flex-start;
   }
   .ptable__row > .ptable__tech {
     display: none;
@@ -1646,12 +1713,17 @@ strong {
     border-top: var(--rule-hair);
   }
 
-  .ptable {
-    margin-left: 12px;
-    margin-right: 12px;
-  }
   .ptable__row {
     grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .line {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .close__actions {
+    flex-direction: column;
+  }
+  .close__actions .btn {
+    width: 100%;
   }
   .ptable__row--head {
     display: none;
@@ -1675,33 +1747,8 @@ strong {
   .ptable__row > .ptable__main {
     padding-bottom: 12px;
   }
-  .flow__lane {
-    flex-direction: column;
-  }
-  .edge {
-    flex-basis: 30px;
-  }
-  .edge::before {
-    left: 50%;
-    right: auto;
-    top: 4px;
-    bottom: 6px;
-    border-top: 0;
-    border-left: 1.5px solid var(--form);
-  }
-  .edge::after {
-    right: auto;
-    left: calc(50% - 4px);
-    top: auto;
-    bottom: 7px;
-    transform: rotate(135deg);
-  }
-  .edge span {
-    top: 0;
-    left: 22px;
-  }
-  .flow__return {
-    justify-content: flex-start;
+  .flow {
+    padding: 12px;
   }
   .skills,
   .skills tbody,
@@ -1741,5 +1788,37 @@ strong {
     right: 12px;
     bottom: 12px;
     height: min(560px, calc(100dvh - 24px));
+  }
+}
+
+/* Touch: keep compact form links visually dense but give them 44px hit areas. */
+@media (pointer: coarse) {
+  .mark__box {
+    width: 44px;
+    height: 44px;
+  }
+  .channels a,
+  .link-btn {
+    min-height: 44px;
+  }
+  .link-btn {
+    margin-top: 2px;
+  }
+  .certs__list a,
+  .close__fields a {
+    position: relative;
+  }
+  .certs__list a::after,
+  .close__fields a::after {
+    content: "";
+    position: absolute;
+    inset: -13px -4px;
+  }
+  .chat__close {
+    width: 44px;
+    height: 44px;
+  }
+  .chip-btn {
+    min-height: 44px;
   }
 }
