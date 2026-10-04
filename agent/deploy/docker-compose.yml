@@ -35,6 +35,8 @@ services:
       - agent-internal
     mem_limit: 1g
     cpus: 0.5
+    # Caps fork bombs from anything the model manages to run.
+    pids_limit: 256
     # read_only rootfs. Only session state persists (named volume seeded from
     # the image with uid 10001). Config and cache are tmpfs so nothing written
     # there can change the agent's behavior across restarts or redeploys.
@@ -74,7 +76,7 @@ services:
     tmpfs:
       - /run
       - /tmp
-      - /var/log/squid:uid=13,gid=13,mode=0750
+      - /var/log/squid:uid=13,gid=13,mode=0750,size=8m
       - /var/spool/squid
     # squid starts as root to open its port and then drops to the `proxy`
     # user: SETUID/SETGID for the switch, CHOWN/DAC_OVERRIDE/FOWNER so the
@@ -87,6 +89,7 @@ services:
       - FOWNER
     mem_limit: 128m
     cpus: 0.25
+    pids_limit: 64
     healthcheck:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/3128"]
       interval: 30s
@@ -113,6 +116,7 @@ services:
       - /tmp
     mem_limit: 64m
     cpus: 0.25
+    pids_limit: 32
     depends_on:
       - agent
     healthcheck:
@@ -147,6 +151,7 @@ services:
       - /data
     mem_limit: 96m
     cpus: 0.2
+    pids_limit: 32
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 30s

@@ -11,6 +11,19 @@ AGENT_DIR="$REPO_DIR/agent"
 COMPOSE_DIR=/etc/dokploy/compose/portfolio-agent-7tghcl/code
 COMPOSE_PROJECT=portfolio-agent-7tghcl
 IMAGE=portfolio-agent:1
+PREVIOUS=portfolio-agent:previous
+
+rollback() {
+  echo "!! $1; rolling the agent back to the previous image" >&2
+  if sudo docker image inspect "$PREVIOUS" >/dev/null 2>&1; then
+    sudo docker tag "$PREVIOUS" "$IMAGE"
+    cd "$COMPOSE_DIR"
+    sudo docker compose -p "$COMPOSE_PROJECT" up -d --force-recreate agent
+  else
+    echo "!! no previous image to roll back to" >&2
+  fi
+  exit 1
+}
 
 echo "==> Syncing repository"
 cd "$REPO_DIR"
@@ -25,7 +38,10 @@ node scripts/generate-agents.mjs
 echo "==> Validating"
 node scripts/validate-agents.mjs
 
-echo "==> Building image"
+echo "==> Building image (keeping the running one as $PREVIOUS)"
+if sudo docker image inspect "$IMAGE" >/dev/null 2>&1; then
+  sudo docker tag "$IMAGE" "$PREVIOUS"
+fi
 sudo docker build -t "$IMAGE" .
 
 echo "==> Syncing compose files"
@@ -46,11 +62,10 @@ for i in $(seq 1 30); do
   echo "   [$i] $status"
   if [ "$status" = healthy ]; then
     echo "==> Verifying network isolation"
-    bash "$AGENT_DIR/deploy/verify.sh" "$COMPOSE_PROJECT"
+    bash "$AGENT_DIR/deploy/verify.sh" "$COMPOSE_PROJECT" || rollback "isolation checks failed"
     echo "==> Deployed"
     exit 0
   fi
   sleep 4
 done
-echo "!! Agent did not become healthy in time" >&2
-exit 1
+rollback "agent did not become healthy in time"

@@ -21,16 +21,20 @@ report() { # report <PASS|FAIL> <description>
 }
 
 # Direct fetch from inside the agent. Node's fetch ignores HTTP(S)_PROXY,
-# so this exercises the raw network: it must not get out.
+# so this exercises the raw network: it must not get out. The probe exits 10
+# when the request went through and 20 when the network refused it; any other
+# status means the probe itself did not run, which is a failure, not a pass.
 agent_direct_must_fail() {
-  local url="$1"
-  if sudo docker exec "$AGENT" node -e "
+  local url="$1" code
+  sudo docker exec "$AGENT" node -e "
     fetch('$url', { signal: AbortSignal.timeout(5000) })
-      .then(() => process.exit(0), () => process.exit(1))" >/dev/null 2>&1; then
-    report FAIL "agent direct ${url} is reachable"
-  else
-    report PASS "agent direct ${url} is blocked"
-  fi
+      .then(() => process.exit(10), () => process.exit(20))" >/dev/null 2>&1
+  code=$?
+  case "$code" in
+    20) report PASS "agent direct ${url} is blocked" ;;
+    10) report FAIL "agent direct ${url} is reachable" ;;
+    *)  report FAIL "agent direct ${url} probe did not run (exit ${code})" ;;
+  esac
 }
 
 # Request through squid from a throwaway container on agent-internal.
@@ -76,23 +80,29 @@ done
 echo "== Gateway"
 # Credentials are built inside the agent and piped into the gateway exec,
 # so they never appear on a command line or in this script's output.
-gateway_get() { # gateway_get <path>; exit 0 only on HTTP 2xx
-  sudo docker exec "$AGENT" sh -c \
-    'printf "%s:%s" "$OPENCODE_SERVER_USERNAME" "$OPENCODE_SERVER_PASSWORD" | base64 -w0' |
-    sudo docker exec -i "$GATEWAY" sh -c \
-      'read -r auth; wget -q -O /dev/null -T 10 --header "Authorization: Basic $auth" "http://127.0.0.1:4096$1"' \
-      _ "$1" >/dev/null 2>&1
+# Prints the HTTP status the gateway answered, or 000 if the probe failed.
+gateway_status() { # gateway_status <path> [noauth]
+  local cred='printf "%s:%s" "$OPENCODE_SERVER_USERNAME" "$OPENCODE_SERVER_PASSWORD" | base64 -w0'
+  [[ "${2:-}" == noauth ]] && cred='echo'
+  sudo docker exec "$AGENT" sh -c "$cred" 2>/dev/null |
+    sudo docker exec -i "$GATEWAY" sh -c '
+      read -r auth
+      if [ -n "$auth" ]; then set -- --header "Authorization: Basic $auth" "$1"; else set -- "$1"; fi
+      wget -S -q -O /dev/null -T 10 "$@" 2>&1 | sed -n "s/.*HTTP\/[0-9.]* \([0-9][0-9][0-9]\).*/\1/p" | tail -n1
+    ' _ "http://127.0.0.1:4096$1" 2>/dev/null | grep -E '^[0-9]{3}$' || echo 000
 }
-if gateway_get /global/health; then
-  report PASS "gateway /global/health with auth -> 200"
-else
-  report FAIL "gateway /global/health with auth failed"
-fi
-if gateway_get /config; then
-  report FAIL "gateway /config is exposed (should be 404)"
-else
-  report PASS "gateway /config not exposed"
-fi
+expect_status() { # expect_status <expected> <path> [noauth]
+  local got
+  got="$(gateway_status "$2" "${3:-}")"
+  if [[ "$got" == "$1" ]]; then
+    report PASS "gateway ${2}${3:+ (${3})} -> ${got}"
+  else
+    report FAIL "gateway ${2}${3:+ (${3})} -> ${got}, expected ${1}"
+  fi
+}
+expect_status 200 /global/health
+expect_status 401 /api/session noauth
+expect_status 404 /config
 
 echo
 if (( FAILURES > 0 )); then
