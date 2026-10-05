@@ -84,6 +84,7 @@ ${operationalInstructions}
 - Full name: ${facts.identity.fullName}
 - Location: ${facts.identity.location}
 - Languages: ${facts.identity.languages}
+- Availability: ${facts.identity.availability}
 
 ## Positioning
 

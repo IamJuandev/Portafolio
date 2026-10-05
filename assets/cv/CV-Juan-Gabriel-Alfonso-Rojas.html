@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HV · Juan Gabriel Alfonso Rojas</title>
+    <style>
+      @page { size: A4; margin: 13mm 14mm; }
+      :root { color: #101820; font-family: Arial, Helvetica, sans-serif; font-size: 9.25pt; line-height: 1.35; }
+      * { box-sizing: border-box; }
+      body { margin: 0; }
+      .cv { max-width: 182mm; margin: 0 auto; }
+      header { border-bottom: 2px solid #2340c8; padding-bottom: 9px; }
+      h1 { color: #1a2f96; font-size: 21pt; letter-spacing: .01em; line-height: 1.05; margin: 0 0 4px; }
+      .headline { color: #2340c8; font-size: 11pt; font-weight: 700; margin: 0 0 5px; }
+      .contact, .availability { margin: 2px 0; }
+      .availability { font-weight: 700; }
+      section { break-inside: avoid; margin-top: 12px; }
+      h2 { border-bottom: 1px solid #2340c8; color: #1a2f96; font-size: 10.5pt; letter-spacing: .08em; margin: 0 0 6px; padding-bottom: 3px; text-transform: uppercase; }
+      h3 { font-size: 10pt; margin: 0; }
+      p { margin: 0 0 6px; }
+      .entry { break-inside: avoid; margin-bottom: 8px; }
+      .entry-head { display: flex; gap: 10px; justify-content: space-between; }
+      .period { flex: none; font-weight: 700; text-align: right; }
+      ul { margin: 3px 0 0; padding-left: 17px; }
+      li { margin: 0 0 2px; }
+      .skills { margin: 0; }
+      .skills div { margin: 0 0 3px; }
+      .skills dt { display: inline; font-weight: 700; }
+      .skills dd { display: inline; margin: 0; }
+      .skills dd::before { content: ": "; }
+      .project { margin-bottom: 5px; }
+      .education-detail { margin: 2px 0 0; }
+      a { color: inherit; text-decoration: none; }
+      @media screen { body { background: #e4e9f8; padding: 22px; } .cv { background: white; box-shadow: 0 2px 12px #1a2f9640; padding: 13mm 14mm; } }
+    </style>
+  </head>
+  <body>
+    <main class="cv">
+  <header>
+    <h1>Juan Gabriel Alfonso Rojas</h1>
+    <p class="headline">Consultor OCI (Oracle Cloud Infrastructure) · Integración Oracle APEX ↔ JD Edwards · Desarrollo a medida con Laravel</p>
+    <p class="contact">Circasia, Quindío, Colombia · +57 313 875 1753 · <a href="mailto:juan.gabrie.dev@gmail.com">juan.gabrie.dev@gmail.com</a></p>
+    <p class="availability">Disponibilidad: Trabajo 100 % remoto · Dispuesto a reubicarme si se requiere</p>
+  </header>
+  <section><h2>Perfil profesional</h2><p>Consultor de Oracle Cloud Infrastructure: opero y analizo entornos OCI de múltiples clientes empresariales (redes, Load Balancers, Bastion, IAM, Cloud Guard, cómputo y almacenamiento), automatizo con OCI CLI/SDK y entrego reportes técnicos y ejecutivos. Integro Oracle APEX con JD Edwards, directamente sobre sus esquemas de base de datos y a través de AIS / Orchestrator, y desarrollo sistemas a medida con Laravel como freelance. Automatizo procesos con n8n y uso agentes de IA como multiplicador supervisado: dirijo, valido y respondo por el resultado. Construyo Komio, mi propio producto, en desarrollo.</p></section>
+  <section><h2>Competencias técnicas</h2><dl class="skills"><div><dt>Cloud (OCI)</dt><dd>Compute, VCN, NSG, LPG, DRG, Load Balancer, Bastion, IAM, Cloud Guard, Object Storage, OCI CLI/SDK</dd></div><div><dt>Sistemas</dt><dd>Oracle Linux, Windows Server, SSH, monitoreo y análisis de logs, SSL/TLS</dd></div><div><dt>Integración APEX ↔ JDE</dt><dd>Esquemas de base de datos JD Edwards, JDE AIS / Orchestrator (REST), APEX_WEB_SERVICE (SOAP), EDI, facturación electrónica DIAN, PL/SQL</dd></div><div><dt>Oracle</dt><dd>Oracle Database (SQL, PL/SQL), Oracle APEX 26.1, APEXlang (.apx), SQLcl, ORDS, WebLogic (soporte)</dd></div><div><dt>Desarrollo</dt><dd>PHP, Laravel 13, Inertia, React, JavaScript, PostgreSQL, Pest</dd></div><div><dt>Automatización</dt><dd>n8n, Dataico/DIAN, APIs REST/SOAP, integraciones con ERP</dd></div><div><dt>IA aplicada</dt><dd>Claude Code, Antigravity, agentes y subagentes, MCP, skills, RAG, NotebookLM, prompt engineering</dd></div><div><dt>DevOps</dt><dd>Git, Docker, Dokploy, GitHub Actions</dd></div><div><dt>Idiomas</dt><dd>Español nativo · Inglés intermedio (lectura técnica)</dd></div></dl></section>
+  <section><h2>Experiencia profesional</h2><article class="entry">
+    <div class="entry-head"><div><h3>Consultor Informático / Desarrollador — VCE Consulting</h3></div><div class="period">Agosto 2024 – actualidad</div></div>
+    <ul><li>Infraestructura OCI multicliente: análisis y operación de entornos empresariales de Oracle Cloud —redes (VCN, NSG, LPG, DRG), Load Balancers, Bastion, IAM, Cloud Guard, cómputo y almacenamiento— con automatización mediante OCI CLI/SDK.</li><li>Monitoreo y soporte de servidores Oracle Linux y Windows Server: evaluación periódica de logs (sistema operativo, Oracle Database, WebLogic, Windows) y reportes técnicos y ejecutivos con planes de acción priorizados.</li><li>Integración Oracle APEX ↔ JD Edwards directamente sobre los esquemas de base de datos de JDE y a través del servidor AIS / Orchestrator (REST sobre WebLogic). Cuando Orchestrator no puede hablar SOAP, Oracle APEX actúa como capa de traducción (APEX_WEB_SERVICE + PL/SQL), por ejemplo con los servicios SOAP del WMS de un operador logístico.</li><li>Hubs de facturación electrónica APEX ↔ JDE (en curso): centros de integración que llevan documentos de JD Edwards ante la DIAN a través de proveedores tecnológicos, con emisión, consulta de estado, reenvío de rechazados y monitor operativo.</li><li>Integración B2B retail ↔ JD Edwards (en producción): recepción de órdenes de compra EDI desde la API REST del portal B2B de un retailer hacia JD Edwards y avisos de despacho de vuelta, en Oracle APEX/PL/SQL con mapeos JSON ↔ JDE, ambientes QA/PROD y documentación técnica de entrega.</li><li>Lideré el Portal de Proveedores de autogestión para facturas, pagos y certificados de retención; desarrollo actual en APEX 26.1 con APEXlang (.apx) y SQLcl, versionado en Git.</li><li>Automatización de facturación electrónica con n8n + Dataico: de 10 minutos a menos de 2 minutos por factura (−80 %).</li><li>Gestión documental: recepción automática de facturas de proveedores, almacenamiento en Drive y registro de metadatos en el ERP.</li><li>Ingeniería con agentes de IA: skills, servidores MCP (OCI, SQLcl, documentación de Oracle) y memoria persistente para que Claude Code y Antigravity ejecuten análisis de infraestructura, revisión de logs, reportes y desarrollo APEX de forma trazable y supervisada.</li><li>Alcance en JD Edwards: integración y conectividad con Oracle Database, APEX, AIS / Orchestrator y OCI, sin administración funcional de JDE.</li></ul>
+  </article><article class="entry">
+    <div class="entry-head"><div><h3>Desarrollador Freelance — Desarrollo a medida — Independiente</h3></div><div class="period">2026</div></div>
+    <ul><li>Mini-ERP para Restaurante (terminado y en operación, inicios de 2026): ERP a medida en Laravel para la gestión operativa y financiera de un restaurante, que centraliza inventario y ventas.</li><li>Directorio Terrario (terminado, 2026): directorio QR/móvil por encargo para los visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares.</li><li>Sistemas a medida con Laravel 13 + Inertia/React, funciones en tiempo real, impresión térmica, integración de facturación electrónica DIAN, PostgreSQL y pruebas con Pest.</li></ul>
+  </article><article class="entry">
+    <div class="entry-head"><div><h3>Desarrollador Web (Pasante) — Universidad La Gran Colombia</h3></div><div class="period">Enero 2023 – julio 2023</div></div>
+    <ul><li>Sistema de gestión de invitaciones con generación dinámica de códigos QR para eventos institucionales.</li><li>Plataformas internas en PHP y Laravel, incluido el portal de mesa de ayuda para la comunidad universitaria.</li></ul>
+  </article></section>
+  <section><h2>Proyectos destacados</h2><article class="project"><strong>Operación OCI asistida por agentes de IA</strong><br />Kit de skills y conectores MCP de uso diario para analizar tenancies, redes, Cloud Guard y logs y generar reportes, con validación humana antes de cualquier acción en producción.</article><article class="project"><strong>Hubs de Facturación Electrónica APEX ↔ JDE</strong><br />En curso. Centros de integración en APEX 26.1 que llevan documentos de JD Edwards ante la DIAN: emisión, estados, reenvío de rechazados y monitor operativo.</article><article class="project"><strong>Integración B2B Retail ↔ JD Edwards</strong><br />En producción. Órdenes de compra EDI desde el portal B2B de un retailer hacia JD Edwards y avisos de despacho de vuelta.</article><article class="project"><strong>Portal de Proveedores en Oracle APEX</strong><br />Plataforma de autogestión para facturas, pagos y certificados de retención que reduce la carga administrativa financiera.</article><article class="project"><strong>Directorio Terrario</strong><br />Freelance, terminado. Directorio QR/móvil para visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares.</article><article class="project"><strong>Komio</strong><br />Producto propio, en desarrollo. SaaS multi-tenant para la gestión de restaurantes: ventas/POS, pedidos y compras, con IA aplicada a la operación.</article><article class="project"><strong>Asistente IA del Portafolio</strong><br />El chat del propio portafolio: un agente de IA en un contenedor aislado, conectado mediante n8n, que responde desde un archivo de hechos versionado.</article></section>
+  <section><h2>Formación académica</h2><article class="entry"><h3>Ingeniería en Sistemas — Corporación Unificada Nacional de Educación Superior (CUN)</h3><p class="education-detail">10.º semestre · próximo a obtener el título profesional</p></article><article class="entry"><h3>Tecnólogo en Análisis y Desarrollo de Sistemas de Información — SENA</h3><p class="education-detail">Título obtenido en diciembre de 2023 (Armenia) · verificable en certificados.sena.edu.co; número de registro disponible a solicitud</p></article><article class="entry"><h3>Técnico en Analítica de Datos — SENA</h3><p class="education-detail">En curso</p></article></section>
+  <section><h2>Certificaciones</h2><p><strong>Anthropic Academy</strong> — 11 certificaciones completadas en IA aplicada, Claude, Claude Code, agentes, subagentes, Claude Cowork y Model Context Protocol. Códigos de verificación disponibles en el portafolio.</p></section>
+</main>
+  </body>
+</html>

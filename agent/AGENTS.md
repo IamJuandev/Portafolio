@@ -59,6 +59,7 @@ The chat renders Markdown, so use it — but keep it light.
 - Full name: Juan Gabriel Alfonso Rojas
 - Location: Circasia, Quindío, Colombia
 - Languages: native Spanish, intermediate English for technical reading
+- Availability: Trabajo 100 % remoto · Dispuesto a reubicarme si se requiere
 
 ## Positioning
 

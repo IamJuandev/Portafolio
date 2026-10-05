@@ -2,7 +2,8 @@
   "identity": {
     "fullName": "Juan Gabriel Alfonso Rojas",
     "location": "Circasia, Quindío, Colombia",
-    "languages": "native Spanish, intermediate English for technical reading"
+    "languages": "native Spanish, intermediate English for technical reading",
+    "availability": "Trabajo 100 % remoto · Dispuesto a reubicarme si se requiere"
   },
   "positioning": [
     "OCI consultant (Oracle Cloud Infrastructure) · Oracle APEX ↔ JD Edwards integration · custom development with Laravel.",
@@ -220,5 +221,139 @@
     "Applied AI": "Claude Code, Antigravity, agents and subagents, MCP, skills, RAG, NotebookLM, prompt engineering",
     "DevOps": "Git, Docker, Dokploy, GitHub Actions",
     "Reference": "JD Edwards: integration experience, not functional administration"
+  },
+  "cv": {
+    "headline": "Consultor OCI (Oracle Cloud Infrastructure) · Integración Oracle APEX ↔ JD Edwards · Desarrollo a medida con Laravel",
+    "summary": "Consultor de Oracle Cloud Infrastructure: opero y analizo entornos OCI de múltiples clientes empresariales (redes, Load Balancers, Bastion, IAM, Cloud Guard, cómputo y almacenamiento), automatizo con OCI CLI/SDK y entrego reportes técnicos y ejecutivos. Integro Oracle APEX con JD Edwards, directamente sobre sus esquemas de base de datos y a través de AIS / Orchestrator, y desarrollo sistemas a medida con Laravel como freelance. Automatizo procesos con n8n y uso agentes de IA como multiplicador supervisado: dirijo, valido y respondo por el resultado. Construyo Komio, mi propio producto, en desarrollo.",
+    "skills": [
+      {
+        "label": "Cloud (OCI)",
+        "items": "Compute, VCN, NSG, LPG, DRG, Load Balancer, Bastion, IAM, Cloud Guard, Object Storage, OCI CLI/SDK"
+      },
+      {
+        "label": "Sistemas",
+        "items": "Oracle Linux, Windows Server, SSH, monitoreo y análisis de logs, SSL/TLS"
+      },
+      {
+        "label": "Integración APEX ↔ JDE",
+        "items": "Esquemas de base de datos JD Edwards, JDE AIS / Orchestrator (REST), APEX_WEB_SERVICE (SOAP), EDI, facturación electrónica DIAN, PL/SQL"
+      },
+      {
+        "label": "Oracle",
+        "items": "Oracle Database (SQL, PL/SQL), Oracle APEX 26.1, APEXlang (.apx), SQLcl, ORDS, WebLogic (soporte)"
+      },
+      {
+        "label": "Desarrollo",
+        "items": "PHP, Laravel 13, Inertia, React, JavaScript, PostgreSQL, Pest"
+      },
+      {
+        "label": "Automatización",
+        "items": "n8n, Dataico/DIAN, APIs REST/SOAP, integraciones con ERP"
+      },
+      {
+        "label": "IA aplicada",
+        "items": "Claude Code, Antigravity, agentes y subagentes, MCP, skills, RAG, NotebookLM, prompt engineering"
+      },
+      {
+        "label": "DevOps",
+        "items": "Git, Docker, Dokploy, GitHub Actions"
+      },
+      {
+        "label": "Idiomas",
+        "items": "Español nativo · Inglés intermedio (lectura técnica)"
+      }
+    ],
+    "experience": [
+      {
+        "role": "Consulting — Consultor Informático / Desarrollador — VCE Consulting",
+        "title": "Consultor Informático / Desarrollador",
+        "organization": "VCE Consulting",
+        "period": "Agosto 2024 – actualidad",
+        "bullets": [
+          "Infraestructura OCI multicliente: análisis y operación de entornos empresariales de Oracle Cloud —redes (VCN, NSG, LPG, DRG), Load Balancers, Bastion, IAM, Cloud Guard, cómputo y almacenamiento— con automatización mediante OCI CLI/SDK.",
+          "Monitoreo y soporte de servidores Oracle Linux y Windows Server: evaluación periódica de logs (sistema operativo, Oracle Database, WebLogic, Windows) y reportes técnicos y ejecutivos con planes de acción priorizados.",
+          "Integración Oracle APEX ↔ JD Edwards directamente sobre los esquemas de base de datos de JDE y a través del servidor AIS / Orchestrator (REST sobre WebLogic). Cuando Orchestrator no puede hablar SOAP, Oracle APEX actúa como capa de traducción (APEX_WEB_SERVICE + PL/SQL), por ejemplo con los servicios SOAP del WMS de un operador logístico.",
+          "Hubs de facturación electrónica APEX ↔ JDE (en curso): centros de integración que llevan documentos de JD Edwards ante la DIAN a través de proveedores tecnológicos, con emisión, consulta de estado, reenvío de rechazados y monitor operativo.",
+          "Integración B2B retail ↔ JD Edwards (en producción): recepción de órdenes de compra EDI desde la API REST del portal B2B de un retailer hacia JD Edwards y avisos de despacho de vuelta, en Oracle APEX/PL/SQL con mapeos JSON ↔ JDE, ambientes QA/PROD y documentación técnica de entrega.",
+          "Lideré el Portal de Proveedores de autogestión para facturas, pagos y certificados de retención; desarrollo actual en APEX 26.1 con APEXlang (.apx) y SQLcl, versionado en Git.",
+          "Automatización de facturación electrónica con n8n + Dataico: de 10 minutos a menos de 2 minutos por factura (−80 %).",
+          "Gestión documental: recepción automática de facturas de proveedores, almacenamiento en Drive y registro de metadatos en el ERP.",
+          "Ingeniería con agentes de IA: skills, servidores MCP (OCI, SQLcl, documentación de Oracle) y memoria persistente para que Claude Code y Antigravity ejecuten análisis de infraestructura, revisión de logs, reportes y desarrollo APEX de forma trazable y supervisada.",
+          "Alcance en JD Edwards: integración y conectividad con Oracle Database, APEX, AIS / Orchestrator y OCI, sin administración funcional de JDE."
+        ]
+      },
+      {
+        "role": "Freelance — Desarrollador Freelance — Desarrollo a medida",
+        "title": "Desarrollador Freelance — Desarrollo a medida",
+        "organization": "Independiente",
+        "period": "2026",
+        "bullets": [
+          "Mini-ERP para Restaurante (terminado y en operación, inicios de 2026): ERP a medida en Laravel para la gestión operativa y financiera de un restaurante, que centraliza inventario y ventas.",
+          "Directorio Terrario (terminado, 2026): directorio QR/móvil por encargo para los visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares.",
+          "Sistemas a medida con Laravel 13 + Inertia/React, funciones en tiempo real, impresión térmica, integración de facturación electrónica DIAN, PostgreSQL y pruebas con Pest."
+        ]
+      },
+      {
+        "role": "Desarrollador Web (Pasante) — Universidad La Gran Colombia",
+        "title": "Desarrollador Web (Pasante)",
+        "organization": "Universidad La Gran Colombia",
+        "period": "Enero 2023 – julio 2023",
+        "bullets": [
+          "Sistema de gestión de invitaciones con generación dinámica de códigos QR para eventos institucionales.",
+          "Plataformas internas en PHP y Laravel, incluido el portal de mesa de ayuda para la comunidad universitaria."
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "name": "Operación OCI asistida por agentes de IA",
+        "description": "Kit de skills y conectores MCP de uso diario para analizar tenancies, redes, Cloud Guard y logs y generar reportes, con validación humana antes de cualquier acción en producción."
+      },
+      {
+        "name": "Hubs de Facturación Electrónica APEX ↔ JDE",
+        "description": "En curso. Centros de integración en APEX 26.1 que llevan documentos de JD Edwards ante la DIAN: emisión, estados, reenvío de rechazados y monitor operativo."
+      },
+      {
+        "name": "Integración B2B Retail ↔ JD Edwards",
+        "description": "En producción. Órdenes de compra EDI desde el portal B2B de un retailer hacia JD Edwards y avisos de despacho de vuelta."
+      },
+      {
+        "name": "Portal de Proveedores en Oracle APEX",
+        "description": "Plataforma de autogestión para facturas, pagos y certificados de retención que reduce la carga administrativa financiera."
+      },
+      {
+        "name": "Directorio Terrario",
+        "description": "Freelance, terminado. Directorio QR/móvil para visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares."
+      },
+      {
+        "name": "Komio",
+        "description": "Producto propio, en desarrollo. SaaS multi-tenant para la gestión de restaurantes: ventas/POS, pedidos y compras, con IA aplicada a la operación."
+      },
+      {
+        "name": "Asistente IA del Portafolio",
+        "description": "El chat del propio portafolio: un agente de IA en un contenedor aislado, conectado mediante n8n, que responde desde un archivo de hechos versionado."
+      }
+    ],
+    "education": [
+      {
+        "title": "Ingeniería en Sistemas",
+        "institution": "Corporación Unificada Nacional de Educación Superior (CUN)",
+        "detail": "10.º semestre · próximo a obtener el título profesional"
+      },
+      {
+        "title": "Tecnólogo en Análisis y Desarrollo de Sistemas de Información",
+        "institution": "SENA",
+        "detail": "Título obtenido en diciembre de 2023 (Armenia) · verificable en certificados.sena.edu.co; número de registro disponible a solicitud"
+      },
+      {
+        "title": "Técnico en Analítica de Datos",
+        "institution": "SENA",
+        "detail": "En curso"
+      }
+    ],
+    "certifications": {
+      "issuer": "Anthropic Academy",
+      "summary": "11 certificaciones completadas en IA aplicada, Claude, Claude Code, agentes, subagentes, Claude Cowork y Model Context Protocol. Códigos de verificación disponibles en el portafolio."
+    }
   }
 }
