@@ -1,11 +1,9 @@
 import { spawn } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { once } from 'node:events';
 import path from 'node:path';
 
-const wait = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 const root = fileURLToPath(new URL('../..', import.meta.url));
 const factsPath = path.join(root, 'agent/portfolio-facts.json');
 const templatePath = path.join(root, 'agent/templates/cv.html');
@@ -84,29 +82,97 @@ function chromeExecutable() {
   return process.env.CHROME_BIN || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 }
 
-async function createPdf() {
+export function needsPdfGeneration(existingHtml, pdfExists, html) {
+  return !pdfExists || existingHtml !== html;
+}
+
+const maxChromeStderrBytes = 64 * 1024;
+const chromeTerminationGraceMs = 1_000;
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function assertCompletePdf(filePath) {
+  const output = await stat(filePath);
+  const contents = await readFile(filePath);
+  if (output.size <= 0 || !contents.subarray(0, 5).equals(Buffer.from('%PDF-')) || !/%%EOF\s*$/.test(contents.toString('latin1'))) {
+    throw new Error('Chrome finished without producing a valid, complete, non-empty CV PDF.');
+  }
+}
+
+async function terminateChrome(chrome, lifecycle) {
+  if (chrome.killed) return;
+  chrome.kill('SIGTERM');
+  let timeout;
+  try {
+    await Promise.race([
+      lifecycle,
+      new Promise((resolve) => { timeout = setTimeout(resolve, chromeTerminationGraceMs); }),
+    ]);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function createPdf({
+  htmlPath: sourceHtmlPath = htmlPath,
+  pdfPath: publishedPdfPath = pdfPath,
+  chromePath = chromeExecutable(),
+  spawnProcess = spawn,
+  timeoutMs = 10_000,
+} = {}) {
   const profileDirectory = await mkdtemp(path.join(tmpdir(), 'cv-chrome-'));
-  const generatedAfter = Date.now() - 1_000;
-  const chrome = spawn(chromeExecutable(), [
-    '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
-    '--disable-background-networking', `--user-data-dir=${profileDirectory}`,
-    '--allow-file-access-from-files', '--no-pdf-header-footer', `--print-to-pdf=${pdfPath}`, htmlPath,
-  ], { stdio: 'ignore' });
+  const outputDirectory = await mkdtemp(path.join(path.dirname(publishedPdfPath), '.cv-pdf-'));
+  const temporaryPdfPath = path.join(outputDirectory, path.basename(publishedPdfPath));
+  let chrome;
+  let lifecycle;
+  let timeout;
+  let browserClosed = false;
 
   try {
-    for (let attempt = 0; attempt < 100; attempt += 1) {
-      await wait(100);
-      try {
-        const output = await stat(pdfPath);
-        if (output.size > 0 && output.mtimeMs >= generatedAfter) return;
-      } catch (error) {
-        if (error.code !== 'ENOENT') throw error;
-      }
+    try {
+      chrome = spawnProcess(chromePath, [
+        '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+        '--disable-background-networking', `--user-data-dir=${profileDirectory}`,
+        '--allow-file-access-from-files', '--no-pdf-header-footer', `--print-to-pdf=${temporaryPdfPath}`, sourceHtmlPath,
+      ], { stdio: ['ignore', 'ignore', 'pipe'] });
+    } catch (error) {
+      throw new Error(`Chrome could not start: ${error.message}`, { cause: error });
     }
-    throw new Error('Chrome did not produce the CV PDF within 10 seconds.');
+
+    let resolveCompletion;
+    const printCompleted = new Promise((resolve) => { resolveCompletion = resolve; });
+    const completionPattern = new RegExp(`(?:^|\\n)\\d+ bytes written to file ${escapeRegExp(temporaryPdfPath)}(?:\\r?\\n|$)`);
+    let stderr = '';
+    chrome.stderr?.on('data', (chunk) => {
+      stderr = (stderr + chunk.toString()).slice(-maxChromeStderrBytes);
+      if (completionPattern.test(stderr)) resolveCompletion({ type: 'print-completed' });
+    });
+    lifecycle = new Promise((resolve) => {
+      chrome.once('error', (error) => resolve({ type: 'error', error }));
+      chrome.once('close', (code, signal) => {
+        browserClosed = true;
+        resolve({ type: 'close', code, signal });
+      });
+    });
+    const timedOut = new Promise((resolve) => {
+      timeout = setTimeout(() => resolve({ type: 'timeout' }), timeoutMs);
+    });
+    const result = await Promise.race([lifecycle, printCompleted, timedOut]);
+    if (result.type === 'timeout') throw new Error(`Chrome did not produce the CV PDF within ${timeoutMs}ms.`);
+    if (result.type === 'error') throw new Error(`Chrome could not start: ${result.error.message}`, { cause: result.error });
+    if (result.type === 'close' && result.code !== 0) {
+      throw new Error(`Chrome exited unsuccessfully (code ${result.code ?? 'null'}, signal ${result.signal ?? 'none'}).`);
+    }
+
+    await assertCompletePdf(temporaryPdfPath);
+    if (result.type === 'print-completed') await terminateChrome(chrome, lifecycle);
+    await rename(temporaryPdfPath, publishedPdfPath);
   } finally {
-    if (!chrome.killed) chrome.kill('SIGTERM');
-    await Promise.race([once(chrome, 'close'), wait(2_000)]);
+    if (timeout) clearTimeout(timeout);
+    if (chrome && !browserClosed) await terminateChrome(chrome, lifecycle);
+    await rm(outputDirectory, { recursive: true, force: true });
     await rm(profileDirectory, { recursive: true, force: true });
   }
 }
@@ -115,12 +181,32 @@ export async function generateCv() {
   const facts = JSON.parse(await readFile(factsPath, 'utf8'));
   const html = renderCv(facts);
   await mkdir(outputDirectory, { recursive: true });
-  await writeFile(htmlPath, html, 'utf8');
-  await createPdf();
-  return { htmlPath, pdfPath };
+  const existingHtml = await readFile(htmlPath, 'utf8').catch((error) => {
+    if (error.code === 'ENOENT') return undefined;
+    throw error;
+  });
+  const pdfExists = await stat(pdfPath)
+    .then((output) => output.size > 0)
+    .catch((error) => {
+      if (error.code === 'ENOENT') return false;
+      throw error;
+    });
+  const pdfGenerated = needsPdfGeneration(existingHtml, pdfExists, html);
+  if (pdfGenerated) {
+    const renderDirectory = await mkdtemp(path.join(outputDirectory, '.cv-render-'));
+    const temporaryHtmlPath = path.join(renderDirectory, path.basename(htmlPath));
+    try {
+      await writeFile(temporaryHtmlPath, html, 'utf8');
+      await createPdf({ htmlPath: temporaryHtmlPath, pdfPath });
+      await rename(temporaryHtmlPath, htmlPath);
+    } finally {
+      await rm(renderDirectory, { recursive: true, force: true });
+    }
+  }
+  return { htmlPath, pdfPath, pdfGenerated };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const outputs = await generateCv();
-  console.log(`Generated ${outputs.htmlPath}\nGenerated ${outputs.pdfPath}`);
+  console.log(`Generated ${outputs.htmlPath}\n${outputs.pdfGenerated ? 'Generated' : 'Kept current'} ${outputs.pdfPath}`);
 }

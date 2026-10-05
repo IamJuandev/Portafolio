@@ -67,6 +67,7 @@ async function validateCv() {
     [facts.identity.fullName, 'canonical name'],
     [facts.identity.location, 'canonical location'],
     [facts.identity.availability, 'canonical availability'],
+    [facts.cv.summary, 'canonical professional summary'],
     [email, 'canonical email'],
     ...facts.cv.experience.map((entry) => [entry.organization, `experience ${entry.organization}`]),
     ...facts.cv.projects.map((entry) => [entry.name, `project ${entry.name}`]),
