@@ -53,7 +53,8 @@ His way of working is the differentiator: AI agents (Claude Code, Antigravity) u
 ## Evidence on Hand
 
 - `rediseño.md`: full rewritten copy (hero, about, areas, experience, projects, skills, truth rules).
-- 11 Anthropic Academy certificates with public verify links (skilljar).
+- 13 Anthropic Academy certificates with public verify links (skilljar).
+- 3 active Oracle certifications (OCI Architect Associate, AI Database Foundations, OCI 2025 AI Foundations) with Oracle verify links.
 - Real metric: electronic invoicing 10 min → under 2 min per invoice (−80 %).
 - Live project URL: `https://ceremonias.arkanis.site/` (QR invitations).
 - Directorio Terrario: 3 Airbnb sites in Armenia, 68 places.

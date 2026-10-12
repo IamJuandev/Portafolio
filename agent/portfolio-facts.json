@@ -141,10 +141,10 @@
     "**Corporación Unificada Nacional de Educación Superior (CUN)** — Ingeniería en Sistemas. 10th semester, close to earning his undergraduate professional degree.",
     "**SENA** — Técnico en Analítica de Datos. In progress.",
     "**SENA** — Tecnólogo en Análisis y Desarrollo de Sistemas de Información. Degree obtained in December 2023 (Armenia). Verifiable at https://certificados.sena.edu.co/ ; the registry number is available on request (never share any ID number).",
-    "**Oracle** — Oracle Cloud Infrastructure Architect Associate (exam 1Z0-1072-26). Issued September 2026, valid until September 2028. Credential listed on his LinkedIn profile.",
-    "**Anthropic Academy** — 11 completed certifications in applied AI, Claude, Claude Code, agents, subagents, Claude Cowork, and Model Context Protocol."
+    "**Oracle** — Oracle Cloud Infrastructure Architect Associate (exam 1Z0-1072-26), valid until September 2028; Oracle AI Database Certified Foundations Associate, valid until July 2028; Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate, valid until May 2027. All verifiable on Oracle's certification site and listed on his LinkedIn profile.",
+    "**Anthropic Academy** — 13 completed certifications in applied AI, Claude, Claude Code, agents, subagents, Claude Cowork, and Model Context Protocol."
   ],
-  "anthropicAcademyCertifications": "Capacidades y limitaciones de la IA · Competencia en IA para pequeñas empresas · Competencia en IA: Marco y fundamentos · Building with the Claude API · Claude 101 · Claude Code 101 · Claude Code in Action · Introduction to agent skills · Introduction to Claude Cowork · Introduction to Model Context Protocol · Introduction to subagents",
+  "anthropicAcademyCertifications": "Capacidades y limitaciones de la IA · Competencia en IA para pequeñas empresas · Competencia en IA: Marco y fundamentos · Building with the Claude API · Claude 101 · Claude Code 101 · Claude Code in Action · Introduction to agent skills · Introduction to Claude Cowork · Introduction to Model Context Protocol · Introduction to subagents · AI Fluency for Builders · Claude Platform 101",
   "contact": [
     [
       "Phone / WhatsApp",
@@ -358,8 +358,16 @@
         "summary": "Oracle · examen 1Z0-1072-26 · vigente de septiembre de 2026 a septiembre de 2028."
       },
       {
+        "name": "Oracle AI Database Certified Foundations Associate",
+        "summary": "Oracle · vigente de julio de 2026 a julio de 2028."
+      },
+      {
+        "name": "Oracle Cloud Infrastructure 2025 Certified AI Foundations Associate",
+        "summary": "Oracle · vigente de mayo de 2025 a mayo de 2027."
+      },
+      {
         "name": "Anthropic Academy",
-        "summary": "11 certificaciones completadas en IA aplicada, Claude, Claude Code, agentes, subagentes, Claude Cowork y Model Context Protocol. Códigos de verificación disponibles en el portafolio."
+        "summary": "13 certificaciones completadas en IA aplicada, Claude, Claude Code, la plataforma de Claude, agentes, subagentes, Claude Cowork y Model Context Protocol. Códigos de verificación disponibles en el portafolio."
       }
     ]
   }
