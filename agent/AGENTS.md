@@ -188,6 +188,7 @@ Technologies: PHP, Laravel, QR, MySQL.
 - **Corporación Unificada Nacional de Educación Superior (CUN)** — Ingeniería en Sistemas. 10th semester, close to earning his undergraduate professional degree.
 - **SENA** — Técnico en Analítica de Datos. In progress.
 - **SENA** — Tecnólogo en Análisis y Desarrollo de Sistemas de Información. Degree obtained in December 2023 (Armenia). Verifiable at https://certificados.sena.edu.co/ ; the registry number is available on request (never share any ID number).
+- **Oracle** — Oracle Cloud Infrastructure Architect Associate (exam 1Z0-1072-26). Issued September 2026, valid until September 2028. Credential listed on his LinkedIn profile.
 - **Anthropic Academy** — 11 completed certifications in applied AI, Claude, Claude Code, agents, subagents, Claude Cowork, and Model Context Protocol.
 
 ### Anthropic Academy certifications

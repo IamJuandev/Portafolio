@@ -25,6 +25,18 @@ test('renders canonical identity, contact and CV data as Spanish selectable HTML
   assert.doesNotMatch(html, /TheDukes|Spring Boot|arquitectura hexagonal/i);
 });
 
+test('renders every certification and the LinkedIn profile', () => {
+  const html = renderCv(facts);
+  const linkedin = facts.contact.find(([label]) => label === 'LinkedIn')[1];
+
+  assert.ok(facts.cv.certifications.length >= 2);
+  for (const certification of facts.cv.certifications) {
+    assert.ok(html.includes(escapeHtml(certification.name)));
+  }
+  assert.ok(html.includes(`href="${escapeHtml(linkedin)}"`));
+  assert.match(html, /Oracle Cloud Infrastructure Architect Associate/);
+});
+
 test('escapes fact content and keeps contact sourced from canonical facts', () => {
   const altered = structuredClone(facts);
   altered.identity.fullName = '<Juan & Co>';

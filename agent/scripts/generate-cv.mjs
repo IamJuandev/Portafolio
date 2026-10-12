@@ -29,19 +29,21 @@ function required(value, label) {
 export function buildCvModel(facts) {
   const email = facts.contact?.find(([label]) => label === 'Email')?.[1];
   const phone = facts.contact?.find(([label]) => label === 'Phone / WhatsApp')?.[1];
+  const linkedin = facts.contact?.find(([label]) => label === 'LinkedIn')?.[1];
   return {
     name: required(facts.identity?.fullName, 'identity.fullName'),
     location: required(facts.identity?.location, 'identity.location'),
     availability: required(facts.identity?.availability, 'identity.availability'),
     email: required(email, 'contact Email'),
     phone: required(phone, 'contact Phone / WhatsApp'),
+    linkedin: required(linkedin, 'contact LinkedIn'),
     headline: required(facts.cv?.headline, 'cv.headline'),
     summary: required(facts.cv?.summary, 'cv.summary'),
     skills: facts.cv?.skills ?? [],
     experience: facts.cv?.experience ?? [],
     projects: facts.cv?.projects ?? [],
     education: facts.cv?.education ?? [],
-    certifications: facts.cv?.certifications,
+    certifications: facts.cv?.certifications ?? [],
   };
 }
 
@@ -64,6 +66,7 @@ export function renderCv(facts, template = defaultTemplate) {
     <h1>${escapeHtml(model.name)}</h1>
     <p class="headline">${escapeHtml(model.headline)}</p>
     <p class="contact">${escapeHtml(model.location)} · ${escapeHtml(model.phone)} · <a href="mailto:${escapeHtml(model.email)}">${escapeHtml(model.email)}</a></p>
+    <p class="contact"><a href="${escapeHtml(model.linkedin)}">${escapeHtml(model.linkedin.replace(/^https:\/\/www\.|\/$/g, ''))}</a></p>
     <p class="availability">Disponibilidad: ${escapeHtml(model.availability)}</p>
   </header>
   <section><h2>Perfil profesional</h2><p>${escapeHtml(model.summary)}</p></section>
@@ -71,7 +74,7 @@ export function renderCv(facts, template = defaultTemplate) {
   <section><h2>Experiencia profesional</h2>${model.experience.map(experienceEntry).join('')}</section>
   <section><h2>Proyectos destacados</h2>${model.projects.map((project) => `<article class="project"><strong>${escapeHtml(project.name)}</strong><br />${escapeHtml(project.description)}</article>`).join('')}</section>
   <section><h2>Formación académica</h2>${model.education.map((entry) => `<article class="entry"><h3>${escapeHtml(entry.title)} — ${escapeHtml(entry.institution)}</h3><p class="education-detail">${escapeHtml(entry.detail)}</p></article>`).join('')}</section>
-  <section><h2>Certificaciones</h2><p><strong>${escapeHtml(model.certifications.issuer)}</strong> — ${escapeHtml(model.certifications.summary)}</p></section>
+  <section><h2>Certificaciones</h2>${model.certifications.map((certification) => `<p><strong>${escapeHtml(certification.name)}</strong> — ${escapeHtml(certification.summary)}</p>`).join('')}</section>
 </main>`;
   return pageTemplate
     .replaceAll('{{title}}', escapeHtml(`HV · ${model.name}`))
