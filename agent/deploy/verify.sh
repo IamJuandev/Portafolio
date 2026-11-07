@@ -62,12 +62,14 @@ agent_direct_must_fail "http://n8n:5678/"
 agent_direct_must_fail "http://portfolio-redis:6379"
 
 echo "== Egress through squid"
-status="$(via_proxy_status https://opencode.ai)"
-if [[ "$status" =~ ^[23][0-9][0-9]$ ]]; then
-  report PASS "proxy https://opencode.ai -> ${status}"
-else
-  report FAIL "proxy https://opencode.ai -> ${status}"
-fi
+for url in https://opencode.ai https://openrouter.ai; do
+  status="$(via_proxy_status "$url")"
+  if [[ "$status" =~ ^[23][0-9][0-9]$ ]]; then
+    report PASS "proxy ${url} -> ${status}"
+  else
+    report FAIL "proxy ${url} -> ${status}"
+  fi
+done
 for url in https://example.com http://169.254.169.254/; do
   status="$(via_proxy_status "$url")"
   if [[ "$status" =~ ^[23][0-9][0-9]$ ]]; then

@@ -3,7 +3,8 @@
 # agent/ and copies this directory into the Dokploy compose dir.
 #
 # Isolation model: `agent` lives only on `agent-internal` (internal: true, no
-# route out). Its only egress is `squid`, which allowlists *.opencode.ai.
+# route out). Its only egress is `squid`, which allowlists *.opencode.ai and
+# openrouter.ai.
 # n8n reaches it only through `gateway`, which exposes a fixed set of paths.
 
 x-hardening: &hardening
@@ -20,8 +21,10 @@ services:
     restart: unless-stopped
     environment:
       # Swap the model without rebuilding. Zen free models are beta and
-      # can disappear without notice.
+      # can disappear without notice. OpenRouter models use the form
+      # openrouter/<vendor>/<model> and need OPENROUTER_API_KEY in .env.
       - OPENCODE_MODEL=${OPENCODE_MODEL:-opencode/big-pickle}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - OPENCODE_SERVER_USERNAME=${OPENCODE_SERVER_USERNAME:-opencode}
       - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD}
       # The only way out of agent-internal.

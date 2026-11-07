@@ -8,7 +8,7 @@ separate dev compose; the image is built from `agent/` (`Dockerfile`).
 | Service   | Role | Networks |
 |-----------|------|----------|
 | `agent`   | OpenCode v2 `serve` on port 4096 with basic auth. Non-root, read-only rootfs, no capabilities. | `agent-internal` |
-| `squid`   | Forward proxy; the agent's only egress. Allows only `*.opencode.ai` (HTTPS CONNECT) and denies private/link-local targets. | `agent-internal`, `agent-egress` |
+| `squid`   | Forward proxy; the agent's only egress. Allows only `*.opencode.ai` and `openrouter.ai` (HTTPS CONNECT) and denies private/link-local targets. | `agent-internal`, `agent-egress` |
 | `gateway` | Unprivileged nginx on 4096, alias `portfolio-agent` on `dokploy-network`. Forwards only the API paths n8n uses; everything else is 404. | `dokploy-network`, `agent-internal` |
 | `redis`   | n8n session store, alias `portfolio-redis`. | `dokploy-network` |
 
@@ -23,7 +23,7 @@ tmpfs so nothing it writes survives a restart:
 - `agent-internal` is `internal: true`: no route to the internet, the VPS,
   OCI metadata (`169.254.169.254`) or other Dokploy services.
 - The agent exits only via `HTTP(S)_PROXY=http://squid:3128`, and squid
-  allowlists `.opencode.ai`.
+  allowlists `.opencode.ai` and `openrouter.ai` (exact host).
 - n8n never reaches the agent directly; it calls `http://portfolio-agent:4096`,
   which now resolves to the gateway.
 
