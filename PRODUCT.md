@@ -30,8 +30,8 @@ His way of working is the differentiator: AI agents (Claude Code, Antigravity) u
 
 - Current role: Consultor Informático / Desarrollador at VCE Consulting (Aug 2024 – present).
 - Work spans multiple client tenancies/compartments, Oracle Linux and Windows Server monitoring, recurring technical/executive reports, APEX 26.1 with APEXlang (`.apx`) + SQLcl versioned in Git, n8n flows, JD Edwards integrations (schemas + AIS / Orchestrator).
-- Freelance: custom Laravel systems (Laravel 13 + Inertia/React, PostgreSQL, Pest); completed Mini-ERP Restaurante and Directorio Terrario.
-- Own product: Komio, multi-tenant restaurant-management SaaS with applied AI, in development. Never describe it as derived from any other company.
+- Freelance: work outside the Oracle ecosystem (Laravel/PHP, React, PostgreSQL); completed Directorio Terrario and the Carolina Castellanos personal site.
+- Own product: Komio, full multi-tenant restaurant ERP (SaaS) with applied AI, in development. Never describe it as derived from any other company.
 - The site embeds a chat assistant backed by n8n (`https://n8n.arkanis.site/webhook/portfolio-chat`) and an agent that answers from `agent/portfolio-facts.json`.
 
 ## Capabilities and Constraints

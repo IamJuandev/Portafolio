@@ -8,7 +8,7 @@
   "positioning": [
     "OCI consultant (Oracle Cloud Infrastructure) · Oracle APEX ↔ JD Edwards integration · custom development with Laravel.",
     "Priority order when describing Juan: (1) OCI consulting — multi-client tenancy/compartment operation, networking, Load Balancers, Bastion, IAM/Cloud Guard, compute/storage, OCI CLI/SDK automation, Oracle Linux/Windows Server monitoring, and technical/executive reports; (2) Oracle APEX ↔ JD Edwards integration; (3) custom Laravel development as a freelancer; (4) Komio, his own product, currently in development.",
-    "Consulting and freelance are separate: consulting is his current role at VCE Consulting (August 2024 – present); freelance is independent custom development (Mini-ERP Restaurante, Directorio Terrario).",
+    "Consulting and freelance are separate: consulting is his current role at VCE Consulting (August 2024 – present); freelance is independent custom development outside the Oracle ecosystem (Laravel/PHP, React, PostgreSQL): Directorio Terrario, the Carolina Castellanos personal site, and his own product Komio.",
     "Differentiator: AI agents (Claude Code, Antigravity, VS Code with assistants) used as engineering tools, not chat — documented skills, MCP servers connected to OCI and databases, persistent memory, clear procedures, and human judgment and validation before every production action. AI is a supervised multiplier, never a replacement: Juan directs, validates, and answers for the result.",
     "JD Edwards is integration experience only (direct database-schema integration and the JDE AIS server / Orchestrator), never functional or administrative experience.",
     "Komio is Juan's own independent product, in development. Do not describe any Komio feature beyond what is listed in the projects section.",
@@ -36,13 +36,14 @@
     {
       "title": "Freelance — Desarrollador Freelance — Desarrollo a medida",
       "period": "2026 — independent work, separate from consulting",
-      "summary": "Freelance custom web development, end to end.",
+      "summary": "Freelance custom web development, end to end, with tools outside the Oracle ecosystem: Laravel/PHP, React, and PostgreSQL.",
       "bullets": [
-        "Mini-ERP Restaurante (completed and operational, early 2026): custom Laravel ERP for a restaurant's operational and financial management, centralizing inventory and sales.",
+        "Komio (own product, in development): full multi-tenant restaurant ERP in Laravel + React and PostgreSQL, covering sales/POS, orders, purchasing, inventory, cash register, expenses, and accounts receivable/payable, with an AI assistant.",
         "Directorio Terrario (completed, 2026): client-commissioned QR/mobile visitor directory for three Airbnb sites in Armenia, with 68 places.",
+        "Carolina Castellanos personal site (completed, 2026): personal site for a coach with workshop landing pages (Eneagrama, Relaciones de pareja with a countdown) and an admin panel to edit the event schedule.",
         "Custom systems in Laravel: Laravel 13 + Inertia/React, realtime features, thermal printing, DIAN electronic invoicing integration, PostgreSQL, and Pest tests."
       ],
-      "technologies": "Laravel 13, Inertia, React, PostgreSQL, Pest, Vite, Express, SQLite."
+      "technologies": "Laravel 13, PHP, Inertia, React, PostgreSQL, Pest, Vite, Node.js, Express, SQLite."
     },
     {
       "title": "Desarrollador Web (Pasante) — Universidad La Gran Colombia",
@@ -96,12 +97,12 @@
       "unknowns": []
     },
     {
-      "name": "Mini-ERP para Restaurante",
-      "description": "Freelance. Completed and operational custom ERP for restaurant operational and financial management, completed in early 2026 and centralizing inventory and sales.",
-      "technologies": "Laravel.",
-      "url": null,
+      "name": "Sitio personal de Carolina Castellanos",
+      "description": "Freelance. Completed personal site for coach Carolina Castellanos: workshop landing pages (Eneagrama, Relaciones de pareja with a countdown) and an admin panel to edit the event schedule.",
+      "technologies": "Node.js, Express, HTML, CSS, JavaScript.",
+      "url": "https://carolina-castellanos.com/eneagrama",
       "unknowns": [
-        "Client, public URL, and additional features are not available in the portfolio facts."
+        "Traffic, conversion metrics, and exact completion date are not available in the portfolio facts."
       ]
     },
     {
@@ -115,8 +116,8 @@
     },
     {
       "name": "Komio",
-      "description": "Juan's own product, in development. Multi-tenant SaaS for restaurant management: restaurant operation (sales/POS, orders, purchasing) with AI applied to restaurant operations.",
-      "technologies": "Laravel, PostgreSQL, multi-tenant SaaS.",
+      "description": "Juan's own product, in development. Full multi-tenant restaurant ERP (SaaS): sales/POS, orders, purchasing, inventory, cash register, expenses, and accounts receivable/payable, with an AI assistant applied to restaurant operations.",
+      "technologies": "Laravel 13, React (Inertia), PostgreSQL, multi-tenant SaaS.",
       "url": null,
       "unknowns": [
         "Launch date, AI feature details, pricing, and customers are not available in the portfolio facts."
@@ -197,7 +198,7 @@
     {
       "name": "Desarrollo a medida con Laravel",
       "bullets": [
-        "Freelance custom web systems, end to end.",
+        "Freelance outside the Oracle ecosystem: custom web systems end to end with Laravel/PHP, React, and PostgreSQL.",
         "Laravel 13 + Inertia/React, realtime features, thermal printing.",
         "DIAN electronic invoicing integration.",
         "PostgreSQL and automated tests with Pest."
@@ -289,8 +290,9 @@
         "organization": "Independiente",
         "period": "2026",
         "bullets": [
-          "Mini-ERP para Restaurante (terminado y en operación, inicios de 2026): ERP a medida en Laravel para la gestión operativa y financiera de un restaurante, que centraliza inventario y ventas.",
+          "Komio (producto propio, en desarrollo): ERP completo multi-tenant para restaurantes en Laravel + React y PostgreSQL, con ventas/POS, comandas, compras, inventario, caja, gastos y cuentas por cobrar/pagar, y un asistente de IA.",
           "Directorio Terrario (terminado, 2026): directorio QR/móvil por encargo para los visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares.",
+          "Sitio personal de Carolina Castellanos (terminado, 2026): landings de talleres (Eneagrama, Relaciones de pareja con cuenta regresiva) y panel de administración para editar el cronograma.",
           "Sistemas a medida con Laravel 13 + Inertia/React, funciones en tiempo real, impresión térmica, integración de facturación electrónica DIAN, PostgreSQL y pruebas con Pest."
         ]
       },
@@ -323,12 +325,16 @@
         "description": "Plataforma de autogestión para facturas, pagos y certificados de retención que reduce la carga administrativa financiera."
       },
       {
+        "name": "Sitio personal de Carolina Castellanos",
+        "description": "Freelance, terminado. Sitio personal con landings de talleres y panel de administración para editar el cronograma."
+      },
+      {
         "name": "Directorio Terrario",
         "description": "Freelance, terminado. Directorio QR/móvil para visitantes de tres alojamientos Airbnb en Armenia, con 68 lugares."
       },
       {
         "name": "Komio",
-        "description": "Producto propio, en desarrollo. SaaS multi-tenant para la gestión de restaurantes: ventas/POS, pedidos y compras, con IA aplicada a la operación."
+        "description": "Producto propio, en desarrollo. ERP completo multi-tenant para restaurantes: ventas/POS, comandas, compras, inventario, caja, gastos y cuentas por cobrar/pagar, con IA aplicada a la operación."
       },
       {
         "name": "Asistente IA del Portafolio",

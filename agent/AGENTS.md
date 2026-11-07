@@ -67,7 +67,7 @@ OCI consultant (Oracle Cloud Infrastructure) · Oracle APEX ↔ JD Edwards integ
 
 Priority order when describing Juan: (1) OCI consulting — multi-client tenancy/compartment operation, networking, Load Balancers, Bastion, IAM/Cloud Guard, compute/storage, OCI CLI/SDK automation, Oracle Linux/Windows Server monitoring, and technical/executive reports; (2) Oracle APEX ↔ JD Edwards integration; (3) custom Laravel development as a freelancer; (4) Komio, his own product, currently in development.
 
-Consulting and freelance are separate: consulting is his current role at VCE Consulting (August 2024 – present); freelance is independent custom development (Mini-ERP Restaurante, Directorio Terrario).
+Consulting and freelance are separate: consulting is his current role at VCE Consulting (August 2024 – present); freelance is independent custom development outside the Oracle ecosystem (Laravel/PHP, React, PostgreSQL): Directorio Terrario, the Carolina Castellanos personal site, and his own product Komio.
 
 Differentiator: AI agents (Claude Code, Antigravity, VS Code with assistants) used as engineering tools, not chat — documented skills, MCP servers connected to OCI and databases, persistent memory, clear procedures, and human judgment and validation before every production action. AI is a supervised multiplier, never a replacement: Juan directs, validates, and answers for the result.
 
@@ -103,7 +103,7 @@ Professional experience started January 2023, including the university internshi
 
 ### Desarrollo a medida con Laravel
 
-- Freelance custom web systems, end to end.
+- Freelance outside the Oracle ecosystem: custom web systems end to end with Laravel/PHP, React, and PostgreSQL.
 - Laravel 13 + Inertia/React, realtime features, thermal printing.
 - DIAN electronic invoicing integration.
 - PostgreSQL and automated tests with Pest.
@@ -151,13 +151,14 @@ Technologies: OCI, Oracle Linux, Windows Server, Oracle Database, Oracle APEX 26
 
 2026 — independent work, separate from consulting
 
-Freelance custom web development, end to end.
+Freelance custom web development, end to end, with tools outside the Oracle ecosystem: Laravel/PHP, React, and PostgreSQL.
 
-- Mini-ERP Restaurante (completed and operational, early 2026): custom Laravel ERP for a restaurant's operational and financial management, centralizing inventory and sales.
+- Komio (own product, in development): full multi-tenant restaurant ERP in Laravel + React and PostgreSQL, covering sales/POS, orders, purchasing, inventory, cash register, expenses, and accounts receivable/payable, with an AI assistant.
 - Directorio Terrario (completed, 2026): client-commissioned QR/mobile visitor directory for three Airbnb sites in Armenia, with 68 places.
+- Carolina Castellanos personal site (completed, 2026): personal site for a coach with workshop landing pages (Eneagrama, Relaciones de pareja with a countdown) and an admin panel to edit the event schedule.
 - Custom systems in Laravel: Laravel 13 + Inertia/React, realtime features, thermal printing, DIAN electronic invoicing integration, PostgreSQL, and Pest tests.
 
-Technologies: Laravel 13, Inertia, React, PostgreSQL, Pest, Vite, Express, SQLite.
+Technologies: Laravel 13, PHP, Inertia, React, PostgreSQL, Pest, Vite, Node.js, Express, SQLite.
 
 ### Desarrollador Web (Pasante) — Universidad La Gran Colombia
 
@@ -177,9 +178,9 @@ Technologies: PHP, Laravel, QR, MySQL.
 - **Hubs de Facturación Electrónica APEX ↔ JDE** — In progress. Integration centers in APEX 26.1 (APEXlang + SQLcl) that take JD Edwards documents to DIAN through technology providers: issuing, status queries, re-issuing rejected documents, and an operational monitor; extension with a logistics operator's WMS SOAP services, translated from APEX with APEX_WEB_SERVICE + PL/SQL. Oracle APEX 26.1, APEXlang, SQLcl, JDE AIS / Orchestrator, SOAP, DIAN. Unknowns: Client name is confidential.
 - **Portal de Proveedores en Oracle APEX** — Led by Juan. Self-service platform for invoicing, payments, and withholding certificates, reducing administrative financial load. Oracle APEX, Oracle Database, JD Edwards.
 - **Automatización de Facturación Electrónica — n8n + Dataico** — n8n + Dataico flows for electronic invoicing, from 10 minutes to under 2 minutes per invoice (−80 %). n8n, Dataico, DIAN, APIs.
-- **Mini-ERP para Restaurante** — Freelance. Completed and operational custom ERP for restaurant operational and financial management, completed in early 2026 and centralizing inventory and sales. Laravel. Unknowns: Client, public URL, and additional features are not available in the portfolio facts.
+- **Sitio personal de Carolina Castellanos** — Freelance. Completed personal site for coach Carolina Castellanos: workshop landing pages (Eneagrama, Relaciones de pareja with a countdown) and an admin panel to edit the event schedule. Node.js, Express, HTML, CSS, JavaScript. https://carolina-castellanos.com/eneagrama Unknowns: Traffic, conversion metrics, and exact completion date are not available in the portfolio facts.
 - **Directorio Terrario** — Freelance. Completed client-commissioned end-to-end deployment in 2026 for three Airbnb sites in Armenia: a QR/mobile visitor directory with 68 places. React, Vite, Tailwind, Express, SQLite. https://directorioterrario.com/ Unknowns: Client name, exact completion date, and additional features or metrics are not available in the portfolio facts.
-- **Komio** — Juan's own product, in development. Multi-tenant SaaS for restaurant management: restaurant operation (sales/POS, orders, purchasing) with AI applied to restaurant operations. Laravel, PostgreSQL, multi-tenant SaaS. Unknowns: Launch date, AI feature details, pricing, and customers are not available in the portfolio facts.
+- **Komio** — Juan's own product, in development. Full multi-tenant restaurant ERP (SaaS): sales/POS, orders, purchasing, inventory, cash register, expenses, and accounts receivable/payable, with an AI assistant applied to restaurant operations. Laravel 13, React (Inertia), PostgreSQL, multi-tenant SaaS. Unknowns: Launch date, AI feature details, pricing, and customers are not available in the portfolio facts.
 - **Asistente IA del Portafolio** — The portfolio chat itself: an AI agent running in an isolated container, wired through n8n, answering from a versioned facts file. n8n, agents, Docker. https://iamjuandev.github.io/Portafolio/
 - **Sistema de Invitaciones con Códigos QR** — Invitation management with dynamic QR generation for institutional events. PHP, Laravel, QR.
 
